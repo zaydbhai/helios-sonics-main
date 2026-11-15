@@ -543,8 +543,8 @@ export const MissionsTab = React.forwardRef<MissionsTabHandle, MissionsTabProps>
         chandraSceneId === "cas-a"
           ? "/api/nasa/image-proxy?nasa_id=GSFC_20171208_Archive_e002183"
           : chandraSceneId === "pillars"
-          ? "/api/nasa/image-proxy?q=Pillars+of+Creation+Webb"
-          : "/api/nasa/image-proxy?q=Sagittarius+A+Chandra";
+          ? "/api/nasa/image-proxy?nasa_id=GSFC_20171208_Archive_e000842"
+          : "/api/nasa/image-proxy?nasa_id=GSFC_20171208_Archive_e001660";
       const img = new Image();
       img.crossOrigin = "anonymous";
       img.onload = () => {
