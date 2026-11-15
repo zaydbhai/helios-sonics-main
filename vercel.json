@@ -1,0 +1,9 @@
+{
+  "installCommand": "ELECTRON_SKIP_BINARY_DOWNLOAD=1 npm install",
+  "buildCommand": "npm run build:web",
+  "outputDirectory": "dist",
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "/api" }
+  ],
+  "functions": { "api/index.js": { "maxDuration": 30 } }
+}

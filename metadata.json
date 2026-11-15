@@ -1,0 +1,10 @@
+{
+  "name": "Helios Sonics — NASA Audio Visualization & Telemetry Observatory",
+  "description": "Interactive Web Audio API synthesizer and spectral visualizer driven by NASA telemetry datasets, paired with a modular Express backend for future NASA API integrations.",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

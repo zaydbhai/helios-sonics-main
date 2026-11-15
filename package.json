@@ -1,0 +1,50 @@
+{
+  "name": "helios-sonics",
+  "private": true,
+  "version": "1.0.0",
+  "description": "NASA telemetry sonification, Earth Now audio jukebox, and 3D orbital spectral observatory",
+  "author": "Helios Sonics Contributors",
+  "type": "module",
+  "main": "dist-electron/main.mjs",
+  "scripts": {
+    "dev": "tsx server.ts",
+    "start": "NODE_ENV=production tsx server.ts",
+    "build": "vite build",
+    "preview": "vite preview",
+    "clean": "rm -rf dist dist-electron release server.js",
+    "lint": "tsc --noEmit",
+    "desktop:build-electron": "esbuild electron/main.ts --bundle --platform=node --format=esm --packages=external --external:electron --outfile=dist-electron/main.mjs && node -e \"import('node:fs').then(fs=>fs.copyFileSync('electron/preload.cjs','dist-electron/preload.cjs'))\"",
+    "desktop:build": "npm run build && npm run desktop:build-electron",
+    "desktop:dev": "npm run desktop:build && electron .",
+    "desktop:dist": "npm run desktop:build && electron-builder --publish never",
+    "build:web": "vite build"
+  },
+  "dependencies": {
+    "@google/genai": "^2.4.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/three": "^0.187.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "dotenv": "^17.2.3",
+    "express": "^4.21.2",
+    "lucide-react": "^0.546.0",
+    "motion": "^12.23.24",
+    "react": "^19.0.1",
+    "react-dom": "^19.0.1",
+    "three": "^0.187.0",
+    "tone": "^15.1.22",
+    "vite": "^8.3.0",
+    "tsx": "^4.21.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.14.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "autoprefixer": "^10.4.21",
+    "electron": "^45.3.2",
+    "electron-builder": "^26.18.0",
+    "esbuild": "^0.28.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^7.0.2"
+  }
+}

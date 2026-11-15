@@ -1,0 +1,1035 @@
+{
+  "generatedAtUtc": "2026-11-14T07:40:12.699412+00:00",
+  "sourceGallery": "https://svs.gsfc.nasa.gov/gallery/earth-now-dashboard/",
+  "tracks": [
+    {
+      "id": "temperature",
+      "title": "GEOS-FP Near-Surface Temperature",
+      "svsId": "5147",
+      "sourceUrl": "https://svs.gsfc.nasa.gov/5147/",
+      "primaryMetricName": "Frame Brightness",
+      "primaryUnit": "luma (0-255)",
+      "secondaryMetricName": "Bright Highlight Cover",
+      "secondaryUnit": "% bright pixels",
+      "audioLegend": "Sonifies the brightness of NASA\u2019s Earth Now visualization frames (mapped to C major pentatonic notes); the optional Layer 2 atmospheric noise swells with bright highlight coverage in each frame.",
+      "frameCount": 36,
+      "brightnessRange": [
+        108.56,
+        117.54
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "imageUrl": "/earth-now/temperature/frame_001.jpg",
+          "timeLabel": "2023-10-16 00:00 UTC",
+          "brightness": 112.34,
+          "normalizedBrightness": 0.4204,
+          "cloudCover": 28.4,
+          "normalizedCloudCover": 0.767
+        },
+        {
+          "index": 1,
+          "imageUrl": "/earth-now/temperature/frame_002.jpg",
+          "timeLabel": "2023-10-16 02:00 UTC",
+          "brightness": 113.4,
+          "normalizedBrightness": 0.5392,
+          "cloudCover": 27.8,
+          "normalizedCloudCover": 0.5701
+        },
+        {
+          "index": 2,
+          "imageUrl": "/earth-now/temperature/frame_003.jpg",
+          "timeLabel": "2023-10-16 04:00 UTC",
+          "brightness": 112.69,
+          "normalizedBrightness": 0.4591,
+          "cloudCover": 28.3,
+          "normalizedCloudCover": 0.7376
+        },
+        {
+          "index": 3,
+          "imageUrl": "/earth-now/temperature/frame_004.jpg",
+          "timeLabel": "2023-10-16 06:00 UTC",
+          "brightness": 113.67,
+          "normalizedBrightness": 0.5688,
+          "cloudCover": 28.4,
+          "normalizedCloudCover": 0.767
+        },
+        {
+          "index": 4,
+          "imageUrl": "/earth-now/temperature/frame_005.jpg",
+          "timeLabel": "2023-10-16 08:00 UTC",
+          "brightness": 114.49,
+          "normalizedBrightness": 0.66,
+          "cloudCover": 29.0,
+          "normalizedCloudCover": 0.9253
+        },
+        {
+          "index": 5,
+          "imageUrl": "/earth-now/temperature/frame_006.jpg",
+          "timeLabel": "2023-10-16 10:00 UTC",
+          "brightness": 111.93,
+          "normalizedBrightness": 0.3745,
+          "cloudCover": 28.2,
+          "normalizedCloudCover": 0.6878
+        },
+        {
+          "index": 6,
+          "imageUrl": "/earth-now/temperature/frame_007.jpg",
+          "timeLabel": "2023-10-16 12:00 UTC",
+          "brightness": 113.85,
+          "normalizedBrightness": 0.5885,
+          "cloudCover": 28.4,
+          "normalizedCloudCover": 0.7557
+        },
+        {
+          "index": 7,
+          "imageUrl": "/earth-now/temperature/frame_008.jpg",
+          "timeLabel": "2023-10-16 14:00 UTC",
+          "brightness": 110.12,
+          "normalizedBrightness": 0.1736,
+          "cloudCover": 28.1,
+          "normalizedCloudCover": 0.6629
+        },
+        {
+          "index": 8,
+          "imageUrl": "/earth-now/temperature/frame_009.jpg",
+          "timeLabel": "2023-10-16 16:00 UTC",
+          "brightness": 110.15,
+          "normalizedBrightness": 0.1764,
+          "cloudCover": 27.5,
+          "normalizedCloudCover": 0.509
+        },
+        {
+          "index": 9,
+          "imageUrl": "/earth-now/temperature/frame_010.jpg",
+          "timeLabel": "2023-10-16 18:00 UTC",
+          "brightness": 108.9,
+          "normalizedBrightness": 0.0371,
+          "cloudCover": 27.8,
+          "normalizedCloudCover": 0.5814
+        },
+        {
+          "index": 10,
+          "imageUrl": "/earth-now/temperature/frame_011.jpg",
+          "timeLabel": "2023-10-16 20:00 UTC",
+          "brightness": 108.77,
+          "normalizedBrightness": 0.0225,
+          "cloudCover": 27.1,
+          "normalizedCloudCover": 0.3869
+        },
+        {
+          "index": 11,
+          "imageUrl": "/earth-now/temperature/frame_012.jpg",
+          "timeLabel": "2023-10-16 22:00 UTC",
+          "brightness": 109.79,
+          "normalizedBrightness": 0.1369,
+          "cloudCover": 27.7,
+          "normalizedCloudCover": 0.5452
+        },
+        {
+          "index": 12,
+          "imageUrl": "/earth-now/temperature/frame_013.jpg",
+          "timeLabel": "2023-10-17 00:00 UTC",
+          "brightness": 108.81,
+          "normalizedBrightness": 0.027,
+          "cloudCover": 27.5,
+          "normalizedCloudCover": 0.509
+        },
+        {
+          "index": 13,
+          "imageUrl": "/earth-now/temperature/frame_014.jpg",
+          "timeLabel": "2023-10-17 02:00 UTC",
+          "brightness": 110.38,
+          "normalizedBrightness": 0.2028,
+          "cloudCover": 27.3,
+          "normalizedCloudCover": 0.4457
+        },
+        {
+          "index": 14,
+          "imageUrl": "/earth-now/temperature/frame_015.jpg",
+          "timeLabel": "2023-10-17 04:00 UTC",
+          "brightness": 108.56,
+          "normalizedBrightness": 0.0,
+          "cloudCover": 27.4,
+          "normalizedCloudCover": 0.4593
+        },
+        {
+          "index": 15,
+          "imageUrl": "/earth-now/temperature/frame_016.jpg",
+          "timeLabel": "2023-10-17 06:00 UTC",
+          "brightness": 109.64,
+          "normalizedBrightness": 0.1198,
+          "cloudCover": 27.1,
+          "normalizedCloudCover": 0.3778
+        },
+        {
+          "index": 16,
+          "imageUrl": "/earth-now/temperature/frame_017.jpg",
+          "timeLabel": "2023-10-17 08:00 UTC",
+          "brightness": 108.68,
+          "normalizedBrightness": 0.0129,
+          "cloudCover": 27.4,
+          "normalizedCloudCover": 0.4661
+        },
+        {
+          "index": 17,
+          "imageUrl": "/earth-now/temperature/frame_018.jpg",
+          "timeLabel": "2023-10-17 10:00 UTC",
+          "brightness": 109.24,
+          "normalizedBrightness": 0.0752,
+          "cloudCover": 26.9,
+          "normalizedCloudCover": 0.3348
+        },
+        {
+          "index": 18,
+          "imageUrl": "/earth-now/temperature/frame_019.jpg",
+          "timeLabel": "2023-10-17 12:00 UTC",
+          "brightness": 109.52,
+          "normalizedBrightness": 0.1068,
+          "cloudCover": 26.9,
+          "normalizedCloudCover": 0.3303
+        },
+        {
+          "index": 19,
+          "imageUrl": "/earth-now/temperature/frame_020.jpg",
+          "timeLabel": "2023-10-17 14:00 UTC",
+          "brightness": 109.04,
+          "normalizedBrightness": 0.0525,
+          "cloudCover": 26.8,
+          "normalizedCloudCover": 0.2805
+        },
+        {
+          "index": 20,
+          "imageUrl": "/earth-now/temperature/frame_021.jpg",
+          "timeLabel": "2023-10-17 16:00 UTC",
+          "brightness": 110.76,
+          "normalizedBrightness": 0.245,
+          "cloudCover": 27.2,
+          "normalizedCloudCover": 0.405
+        },
+        {
+          "index": 21,
+          "imageUrl": "/earth-now/temperature/frame_022.jpg",
+          "timeLabel": "2023-10-17 18:00 UTC",
+          "brightness": 108.81,
+          "normalizedBrightness": 0.0275,
+          "cloudCover": 26.8,
+          "normalizedCloudCover": 0.2986
+        },
+        {
+          "index": 22,
+          "imageUrl": "/earth-now/temperature/frame_023.jpg",
+          "timeLabel": "2023-10-17 20:00 UTC",
+          "brightness": 110.87,
+          "normalizedBrightness": 0.2569,
+          "cloudCover": 26.8,
+          "normalizedCloudCover": 0.2896
+        },
+        {
+          "index": 23,
+          "imageUrl": "/earth-now/temperature/frame_024.jpg",
+          "timeLabel": "2023-10-17 22:00 UTC",
+          "brightness": 111.25,
+          "normalizedBrightness": 0.2986,
+          "cloudCover": 28.0,
+          "normalizedCloudCover": 0.6403
+        },
+        {
+          "index": 24,
+          "imageUrl": "/earth-now/temperature/frame_025.jpg",
+          "timeLabel": "2023-10-18 00:00 UTC",
+          "brightness": 110.5,
+          "normalizedBrightness": 0.216,
+          "cloudCover": 26.2,
+          "normalizedCloudCover": 0.1335
+        },
+        {
+          "index": 25,
+          "imageUrl": "/earth-now/temperature/frame_026.jpg",
+          "timeLabel": "2023-10-18 02:00 UTC",
+          "brightness": 112.84,
+          "normalizedBrightness": 0.4764,
+          "cloudCover": 28.1,
+          "normalizedCloudCover": 0.6652
+        },
+        {
+          "index": 26,
+          "imageUrl": "/earth-now/temperature/frame_027.jpg",
+          "timeLabel": "2023-10-18 04:00 UTC",
+          "brightness": 110.15,
+          "normalizedBrightness": 0.1768,
+          "cloudCover": 26.0,
+          "normalizedCloudCover": 0.0543
+        },
+        {
+          "index": 27,
+          "imageUrl": "/earth-now/temperature/frame_028.jpg",
+          "timeLabel": "2023-10-18 06:00 UTC",
+          "brightness": 113.09,
+          "normalizedBrightness": 0.5042,
+          "cloudCover": 27.3,
+          "normalizedCloudCover": 0.4321
+        },
+        {
+          "index": 28,
+          "imageUrl": "/earth-now/temperature/frame_029.jpg",
+          "timeLabel": "2023-10-18 08:00 UTC",
+          "brightness": 110.14,
+          "normalizedBrightness": 0.1759,
+          "cloudCover": 26.3,
+          "normalizedCloudCover": 0.1584
+        },
+        {
+          "index": 29,
+          "imageUrl": "/earth-now/temperature/frame_030.jpg",
+          "timeLabel": "2023-10-18 10:00 UTC",
+          "brightness": 111.18,
+          "normalizedBrightness": 0.2911,
+          "cloudCover": 25.8,
+          "normalizedCloudCover": 0.0
+        },
+        {
+          "index": 30,
+          "imageUrl": "/earth-now/temperature/frame_031.jpg",
+          "timeLabel": "2023-10-18 12:00 UTC",
+          "brightness": 111.43,
+          "normalizedBrightness": 0.3191,
+          "cloudCover": 27.3,
+          "normalizedCloudCover": 0.4321
+        },
+        {
+          "index": 31,
+          "imageUrl": "/earth-now/temperature/frame_032.jpg",
+          "timeLabel": "2023-10-18 14:00 UTC",
+          "brightness": 111.77,
+          "normalizedBrightness": 0.3571,
+          "cloudCover": 26.4,
+          "normalizedCloudCover": 0.181
+        },
+        {
+          "index": 32,
+          "imageUrl": "/earth-now/temperature/frame_033.jpg",
+          "timeLabel": "2023-10-18 16:00 UTC",
+          "brightness": 114.02,
+          "normalizedBrightness": 0.6082,
+          "cloudCover": 28.5,
+          "normalizedCloudCover": 0.7941
+        },
+        {
+          "index": 33,
+          "imageUrl": "/earth-now/temperature/frame_034.jpg",
+          "timeLabel": "2023-10-18 18:00 UTC",
+          "brightness": 113.86,
+          "normalizedBrightness": 0.5899,
+          "cloudCover": 28.0,
+          "normalizedCloudCover": 0.6516
+        },
+        {
+          "index": 34,
+          "imageUrl": "/earth-now/temperature/frame_035.jpg",
+          "timeLabel": "2023-10-18 20:00 UTC",
+          "brightness": 117.54,
+          "normalizedBrightness": 1.0,
+          "cloudCover": 29.2,
+          "normalizedCloudCover": 1.0
+        },
+        {
+          "index": 35,
+          "imageUrl": "/earth-now/temperature/frame_036.jpg",
+          "timeLabel": "2023-10-18 22:00 UTC",
+          "brightness": 115.74,
+          "normalizedBrightness": 0.7994,
+          "cloudCover": 29.2,
+          "normalizedCloudCover": 0.9842
+        }
+      ],
+      "soundPreview": "Warm pentatonic chimes rising with brighter temperature map frames"
+    },
+    {
+      "id": "wind",
+      "title": "GEOS-FP Near-Surface Wind Speed",
+      "svsId": "5148",
+      "sourceUrl": "https://svs.gsfc.nasa.gov/5148/",
+      "primaryMetricName": "Frame Brightness",
+      "primaryUnit": "luma (0-255)",
+      "secondaryMetricName": "Bright Highlight Cover",
+      "secondaryUnit": "% bright pixels",
+      "audioLegend": "Sonifies the brightness of NASA\u2019s Earth Now visualization frames (mapped to C major pentatonic notes); the optional Layer 2 atmospheric noise tracks bright highlight regions in each image.",
+      "frameCount": 36,
+      "brightnessRange": [
+        112.86,
+        125.46
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "imageUrl": "/earth-now/wind/frame_001.jpg",
+          "timeLabel": "2023-10-16 00:00 UTC",
+          "brightness": 120.02,
+          "normalizedBrightness": 0.5685,
+          "cloudCover": 34.2,
+          "normalizedCloudCover": 0.5275
+        },
+        {
+          "index": 1,
+          "imageUrl": "/earth-now/wind/frame_002.jpg",
+          "timeLabel": "2023-10-16 02:00 UTC",
+          "brightness": 122.17,
+          "normalizedBrightness": 0.7389,
+          "cloudCover": 35.8,
+          "normalizedCloudCover": 0.7702
+        },
+        {
+          "index": 2,
+          "imageUrl": "/earth-now/wind/frame_003.jpg",
+          "timeLabel": "2023-10-16 04:00 UTC",
+          "brightness": 122.59,
+          "normalizedBrightness": 0.7717,
+          "cloudCover": 36.3,
+          "normalizedCloudCover": 0.8511
+        },
+        {
+          "index": 3,
+          "imageUrl": "/earth-now/wind/frame_004.jpg",
+          "timeLabel": "2023-10-16 06:00 UTC",
+          "brightness": 122.84,
+          "normalizedBrightness": 0.792,
+          "cloudCover": 36.8,
+          "normalizedCloudCover": 0.9226
+        },
+        {
+          "index": 4,
+          "imageUrl": "/earth-now/wind/frame_005.jpg",
+          "timeLabel": "2023-10-16 08:00 UTC",
+          "brightness": 120.37,
+          "normalizedBrightness": 0.5959,
+          "cloudCover": 34.7,
+          "normalizedCloudCover": 0.6131
+        },
+        {
+          "index": 5,
+          "imageUrl": "/earth-now/wind/frame_006.jpg",
+          "timeLabel": "2023-10-16 10:00 UTC",
+          "brightness": 121.81,
+          "normalizedBrightness": 0.71,
+          "cloudCover": 35.9,
+          "normalizedCloudCover": 0.7831
+        },
+        {
+          "index": 6,
+          "imageUrl": "/earth-now/wind/frame_007.jpg",
+          "timeLabel": "2023-10-16 12:00 UTC",
+          "brightness": 120.83,
+          "normalizedBrightness": 0.6327,
+          "cloudCover": 35.0,
+          "normalizedCloudCover": 0.653
+        },
+        {
+          "index": 7,
+          "imageUrl": "/earth-now/wind/frame_008.jpg",
+          "timeLabel": "2023-10-16 14:00 UTC",
+          "brightness": 119.5,
+          "normalizedBrightness": 0.5269,
+          "cloudCover": 33.8,
+          "normalizedCloudCover": 0.476
+        },
+        {
+          "index": 8,
+          "imageUrl": "/earth-now/wind/frame_009.jpg",
+          "timeLabel": "2023-10-16 16:00 UTC",
+          "brightness": 119.06,
+          "normalizedBrightness": 0.4916,
+          "cloudCover": 33.7,
+          "normalizedCloudCover": 0.4584
+        },
+        {
+          "index": 9,
+          "imageUrl": "/earth-now/wind/frame_010.jpg",
+          "timeLabel": "2023-10-16 18:00 UTC",
+          "brightness": 114.52,
+          "normalizedBrightness": 0.1314,
+          "cloudCover": 31.0,
+          "normalizedCloudCover": 0.0457
+        },
+        {
+          "index": 10,
+          "imageUrl": "/earth-now/wind/frame_011.jpg",
+          "timeLabel": "2023-10-16 20:00 UTC",
+          "brightness": 114.33,
+          "normalizedBrightness": 0.1167,
+          "cloudCover": 31.6,
+          "normalizedCloudCover": 0.1372
+        },
+        {
+          "index": 11,
+          "imageUrl": "/earth-now/wind/frame_012.jpg",
+          "timeLabel": "2023-10-16 22:00 UTC",
+          "brightness": 112.86,
+          "normalizedBrightness": 0.0,
+          "cloudCover": 30.7,
+          "normalizedCloudCover": 0.0
+        },
+        {
+          "index": 12,
+          "imageUrl": "/earth-now/wind/frame_013.jpg",
+          "timeLabel": "2023-10-17 00:00 UTC",
+          "brightness": 113.84,
+          "normalizedBrightness": 0.0776,
+          "cloudCover": 30.8,
+          "normalizedCloudCover": 0.0152
+        },
+        {
+          "index": 13,
+          "imageUrl": "/earth-now/wind/frame_014.jpg",
+          "timeLabel": "2023-10-17 02:00 UTC",
+          "brightness": 115.46,
+          "normalizedBrightness": 0.2059,
+          "cloudCover": 31.8,
+          "normalizedCloudCover": 0.1653
+        },
+        {
+          "index": 14,
+          "imageUrl": "/earth-now/wind/frame_015.jpg",
+          "timeLabel": "2023-10-17 04:00 UTC",
+          "brightness": 116.31,
+          "normalizedBrightness": 0.2736,
+          "cloudCover": 31.4,
+          "normalizedCloudCover": 0.1114
+        },
+        {
+          "index": 15,
+          "imageUrl": "/earth-now/wind/frame_016.jpg",
+          "timeLabel": "2023-10-17 06:00 UTC",
+          "brightness": 118.98,
+          "normalizedBrightness": 0.4856,
+          "cloudCover": 33.7,
+          "normalizedCloudCover": 0.4525
+        },
+        {
+          "index": 16,
+          "imageUrl": "/earth-now/wind/frame_017.jpg",
+          "timeLabel": "2023-10-17 08:00 UTC",
+          "brightness": 119.01,
+          "normalizedBrightness": 0.4877,
+          "cloudCover": 32.7,
+          "normalizedCloudCover": 0.313
+        },
+        {
+          "index": 17,
+          "imageUrl": "/earth-now/wind/frame_018.jpg",
+          "timeLabel": "2023-10-17 10:00 UTC",
+          "brightness": 122.61,
+          "normalizedBrightness": 0.774,
+          "cloudCover": 35.8,
+          "normalizedCloudCover": 0.7667
+        },
+        {
+          "index": 18,
+          "imageUrl": "/earth-now/wind/frame_019.jpg",
+          "timeLabel": "2023-10-17 12:00 UTC",
+          "brightness": 122.49,
+          "normalizedBrightness": 0.7639,
+          "cloudCover": 34.7,
+          "normalizedCloudCover": 0.6084
+        },
+        {
+          "index": 19,
+          "imageUrl": "/earth-now/wind/frame_020.jpg",
+          "timeLabel": "2023-10-17 14:00 UTC",
+          "brightness": 125.46,
+          "normalizedBrightness": 1.0,
+          "cloudCover": 37.3,
+          "normalizedCloudCover": 1.0
+        },
+        {
+          "index": 20,
+          "imageUrl": "/earth-now/wind/frame_021.jpg",
+          "timeLabel": "2023-10-17 16:00 UTC",
+          "brightness": 124.29,
+          "normalizedBrightness": 0.9068,
+          "cloudCover": 35.9,
+          "normalizedCloudCover": 0.7796
+        },
+        {
+          "index": 21,
+          "imageUrl": "/earth-now/wind/frame_022.jpg",
+          "timeLabel": "2023-10-17 18:00 UTC",
+          "brightness": 123.01,
+          "normalizedBrightness": 0.8057,
+          "cloudCover": 36.0,
+          "normalizedCloudCover": 0.8007
+        },
+        {
+          "index": 22,
+          "imageUrl": "/earth-now/wind/frame_023.jpg",
+          "timeLabel": "2023-10-17 20:00 UTC",
+          "brightness": 122.4,
+          "normalizedBrightness": 0.757,
+          "cloudCover": 35.7,
+          "normalizedCloudCover": 0.7608
+        },
+        {
+          "index": 23,
+          "imageUrl": "/earth-now/wind/frame_024.jpg",
+          "timeLabel": "2023-10-17 22:00 UTC",
+          "brightness": 120.1,
+          "normalizedBrightness": 0.5745,
+          "cloudCover": 34.0,
+          "normalizedCloudCover": 0.5076
+        },
+        {
+          "index": 24,
+          "imageUrl": "/earth-now/wind/frame_025.jpg",
+          "timeLabel": "2023-10-18 00:00 UTC",
+          "brightness": 121.06,
+          "normalizedBrightness": 0.6504,
+          "cloudCover": 35.1,
+          "normalizedCloudCover": 0.6635
+        },
+        {
+          "index": 25,
+          "imageUrl": "/earth-now/wind/frame_026.jpg",
+          "timeLabel": "2023-10-18 02:00 UTC",
+          "brightness": 119.13,
+          "normalizedBrightness": 0.4977,
+          "cloudCover": 33.5,
+          "normalizedCloudCover": 0.4279
+        },
+        {
+          "index": 26,
+          "imageUrl": "/earth-now/wind/frame_027.jpg",
+          "timeLabel": "2023-10-18 04:00 UTC",
+          "brightness": 119.93,
+          "normalizedBrightness": 0.5609,
+          "cloudCover": 33.8,
+          "normalizedCloudCover": 0.4771
+        },
+        {
+          "index": 27,
+          "imageUrl": "/earth-now/wind/frame_028.jpg",
+          "timeLabel": "2023-10-18 06:00 UTC",
+          "brightness": 120.03,
+          "normalizedBrightness": 0.5692,
+          "cloudCover": 34.3,
+          "normalizedCloudCover": 0.5522
+        },
+        {
+          "index": 28,
+          "imageUrl": "/earth-now/wind/frame_029.jpg",
+          "timeLabel": "2023-10-18 08:00 UTC",
+          "brightness": 118.95,
+          "normalizedBrightness": 0.4835,
+          "cloudCover": 34.1,
+          "normalizedCloudCover": 0.5147
+        },
+        {
+          "index": 29,
+          "imageUrl": "/earth-now/wind/frame_030.jpg",
+          "timeLabel": "2023-10-18 10:00 UTC",
+          "brightness": 117.93,
+          "normalizedBrightness": 0.4026,
+          "cloudCover": 33.7,
+          "normalizedCloudCover": 0.4513
+        },
+        {
+          "index": 30,
+          "imageUrl": "/earth-now/wind/frame_031.jpg",
+          "timeLabel": "2023-10-18 12:00 UTC",
+          "brightness": 115.83,
+          "normalizedBrightness": 0.2359,
+          "cloudCover": 32.5,
+          "normalizedCloudCover": 0.2696
+        },
+        {
+          "index": 31,
+          "imageUrl": "/earth-now/wind/frame_032.jpg",
+          "timeLabel": "2023-10-18 14:00 UTC",
+          "brightness": 117.36,
+          "normalizedBrightness": 0.3569,
+          "cloudCover": 33.4,
+          "normalizedCloudCover": 0.4103
+        },
+        {
+          "index": 32,
+          "imageUrl": "/earth-now/wind/frame_033.jpg",
+          "timeLabel": "2023-10-18 16:00 UTC",
+          "brightness": 116.26,
+          "normalizedBrightness": 0.2698,
+          "cloudCover": 32.4,
+          "normalizedCloudCover": 0.2638
+        },
+        {
+          "index": 33,
+          "imageUrl": "/earth-now/wind/frame_034.jpg",
+          "timeLabel": "2023-10-18 18:00 UTC",
+          "brightness": 117.24,
+          "normalizedBrightness": 0.3473,
+          "cloudCover": 33.2,
+          "normalizedCloudCover": 0.3834
+        },
+        {
+          "index": 34,
+          "imageUrl": "/earth-now/wind/frame_035.jpg",
+          "timeLabel": "2023-10-18 20:00 UTC",
+          "brightness": 117.35,
+          "normalizedBrightness": 0.3564,
+          "cloudCover": 33.3,
+          "normalizedCloudCover": 0.3998
+        },
+        {
+          "index": 35,
+          "imageUrl": "/earth-now/wind/frame_036.jpg",
+          "timeLabel": "2023-10-18 22:00 UTC",
+          "brightness": 117.97,
+          "normalizedBrightness": 0.4053,
+          "cloudCover": 32.9,
+          "normalizedCloudCover": 0.3423
+        }
+      ],
+      "soundPreview": "Fluid pentatonic pulses following bright wind-band frame changes"
+    },
+    {
+      "id": "precipitation",
+      "title": "GEOS-FP Precipitation & Clouds",
+      "svsId": "5149",
+      "sourceUrl": "https://svs.gsfc.nasa.gov/5149/",
+      "primaryMetricName": "Frame Brightness",
+      "primaryUnit": "luma (0-255)",
+      "secondaryMetricName": "Bright Cloud / Highlight Cover",
+      "secondaryUnit": "% bright pixels",
+      "audioLegend": "Sonifies the brightness of NASA\u2019s Earth Now visualization frames (mapped to C major pentatonic notes); the optional Layer 2 atmospheric noise follows bright white cloud and highlight coverage in each frame.",
+      "frameCount": 36,
+      "brightnessRange": [
+        88.91,
+        92.52
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "imageUrl": "/earth-now/precipitation/frame_001.jpg",
+          "timeLabel": "2023-10-16 00:00 UTC",
+          "brightness": 88.91,
+          "normalizedBrightness": 0.0,
+          "cloudCover": 10.4,
+          "normalizedCloudCover": 0.6839
+        },
+        {
+          "index": 1,
+          "imageUrl": "/earth-now/precipitation/frame_002.jpg",
+          "timeLabel": "2023-10-16 02:00 UTC",
+          "brightness": 89.46,
+          "normalizedBrightness": 0.1517,
+          "cloudCover": 10.7,
+          "normalizedCloudCover": 0.9138
+        },
+        {
+          "index": 2,
+          "imageUrl": "/earth-now/precipitation/frame_003.jpg",
+          "timeLabel": "2023-10-16 04:00 UTC",
+          "brightness": 90.28,
+          "normalizedBrightness": 0.38,
+          "cloudCover": 10.6,
+          "normalizedCloudCover": 0.8506
+        },
+        {
+          "index": 3,
+          "imageUrl": "/earth-now/precipitation/frame_004.jpg",
+          "timeLabel": "2023-10-16 06:00 UTC",
+          "brightness": 91.08,
+          "normalizedBrightness": 0.6019,
+          "cloudCover": 10.7,
+          "normalizedCloudCover": 0.9138
+        },
+        {
+          "index": 4,
+          "imageUrl": "/earth-now/precipitation/frame_005.jpg",
+          "timeLabel": "2023-10-16 08:00 UTC",
+          "brightness": 90.22,
+          "normalizedBrightness": 0.3624,
+          "cloudCover": 10.6,
+          "normalizedCloudCover": 0.8391
+        },
+        {
+          "index": 5,
+          "imageUrl": "/earth-now/precipitation/frame_006.jpg",
+          "timeLabel": "2023-10-16 10:00 UTC",
+          "brightness": 90.63,
+          "normalizedBrightness": 0.4764,
+          "cloudCover": 10.8,
+          "normalizedCloudCover": 1.0
+        },
+        {
+          "index": 6,
+          "imageUrl": "/earth-now/precipitation/frame_007.jpg",
+          "timeLabel": "2023-10-16 12:00 UTC",
+          "brightness": 89.52,
+          "normalizedBrightness": 0.1671,
+          "cloudCover": 10.3,
+          "normalizedCloudCover": 0.6494
+        },
+        {
+          "index": 7,
+          "imageUrl": "/earth-now/precipitation/frame_008.jpg",
+          "timeLabel": "2023-10-16 14:00 UTC",
+          "brightness": 89.26,
+          "normalizedBrightness": 0.0959,
+          "cloudCover": 10.3,
+          "normalizedCloudCover": 0.6437
+        },
+        {
+          "index": 8,
+          "imageUrl": "/earth-now/precipitation/frame_009.jpg",
+          "timeLabel": "2023-10-16 16:00 UTC",
+          "brightness": 89.64,
+          "normalizedBrightness": 0.2022,
+          "cloudCover": 10.1,
+          "normalizedCloudCover": 0.4713
+        },
+        {
+          "index": 9,
+          "imageUrl": "/earth-now/precipitation/frame_010.jpg",
+          "timeLabel": "2023-10-16 18:00 UTC",
+          "brightness": 89.46,
+          "normalizedBrightness": 0.1502,
+          "cloudCover": 10.2,
+          "normalizedCloudCover": 0.5632
+        },
+        {
+          "index": 10,
+          "imageUrl": "/earth-now/precipitation/frame_011.jpg",
+          "timeLabel": "2023-10-16 20:00 UTC",
+          "brightness": 89.87,
+          "normalizedBrightness": 0.264,
+          "cloudCover": 10.2,
+          "normalizedCloudCover": 0.5402
+        },
+        {
+          "index": 11,
+          "imageUrl": "/earth-now/precipitation/frame_012.jpg",
+          "timeLabel": "2023-10-16 22:00 UTC",
+          "brightness": 89.22,
+          "normalizedBrightness": 0.0852,
+          "cloudCover": 9.9,
+          "normalizedCloudCover": 0.3448
+        },
+        {
+          "index": 12,
+          "imageUrl": "/earth-now/precipitation/frame_013.jpg",
+          "timeLabel": "2023-10-17 00:00 UTC",
+          "brightness": 90.55,
+          "normalizedBrightness": 0.4537,
+          "cloudCover": 9.9,
+          "normalizedCloudCover": 0.3793
+        },
+        {
+          "index": 13,
+          "imageUrl": "/earth-now/precipitation/frame_014.jpg",
+          "timeLabel": "2023-10-17 02:00 UTC",
+          "brightness": 90.34,
+          "normalizedBrightness": 0.3946,
+          "cloudCover": 9.8,
+          "normalizedCloudCover": 0.2931
+        },
+        {
+          "index": 14,
+          "imageUrl": "/earth-now/precipitation/frame_015.jpg",
+          "timeLabel": "2023-10-17 04:00 UTC",
+          "brightness": 90.16,
+          "normalizedBrightness": 0.3461,
+          "cloudCover": 10.1,
+          "normalizedCloudCover": 0.4598
+        },
+        {
+          "index": 15,
+          "imageUrl": "/earth-now/precipitation/frame_016.jpg",
+          "timeLabel": "2023-10-17 06:00 UTC",
+          "brightness": 90.77,
+          "normalizedBrightness": 0.5159,
+          "cloudCover": 10.2,
+          "normalizedCloudCover": 0.5575
+        },
+        {
+          "index": 16,
+          "imageUrl": "/earth-now/precipitation/frame_017.jpg",
+          "timeLabel": "2023-10-17 08:00 UTC",
+          "brightness": 89.84,
+          "normalizedBrightness": 0.258,
+          "cloudCover": 10.2,
+          "normalizedCloudCover": 0.5862
+        },
+        {
+          "index": 17,
+          "imageUrl": "/earth-now/precipitation/frame_018.jpg",
+          "timeLabel": "2023-10-17 10:00 UTC",
+          "brightness": 90.87,
+          "normalizedBrightness": 0.5431,
+          "cloudCover": 10.3,
+          "normalizedCloudCover": 0.6494
+        },
+        {
+          "index": 18,
+          "imageUrl": "/earth-now/precipitation/frame_019.jpg",
+          "timeLabel": "2023-10-17 12:00 UTC",
+          "brightness": 90.86,
+          "normalizedBrightness": 0.5394,
+          "cloudCover": 10.4,
+          "normalizedCloudCover": 0.7471
+        },
+        {
+          "index": 19,
+          "imageUrl": "/earth-now/precipitation/frame_020.jpg",
+          "timeLabel": "2023-10-17 14:00 UTC",
+          "brightness": 91.87,
+          "normalizedBrightness": 0.8194,
+          "cloudCover": 10.7,
+          "normalizedCloudCover": 0.9425
+        },
+        {
+          "index": 20,
+          "imageUrl": "/earth-now/precipitation/frame_021.jpg",
+          "timeLabel": "2023-10-17 16:00 UTC",
+          "brightness": 91.59,
+          "normalizedBrightness": 0.7418,
+          "cloudCover": 10.7,
+          "normalizedCloudCover": 0.9138
+        },
+        {
+          "index": 21,
+          "imageUrl": "/earth-now/precipitation/frame_022.jpg",
+          "timeLabel": "2023-10-17 18:00 UTC",
+          "brightness": 92.52,
+          "normalizedBrightness": 1.0,
+          "cloudCover": 10.8,
+          "normalizedCloudCover": 1.0
+        },
+        {
+          "index": 22,
+          "imageUrl": "/earth-now/precipitation/frame_023.jpg",
+          "timeLabel": "2023-10-17 20:00 UTC",
+          "brightness": 91.99,
+          "normalizedBrightness": 0.8537,
+          "cloudCover": 10.6,
+          "normalizedCloudCover": 0.8448
+        },
+        {
+          "index": 23,
+          "imageUrl": "/earth-now/precipitation/frame_024.jpg",
+          "timeLabel": "2023-10-17 22:00 UTC",
+          "brightness": 91.03,
+          "normalizedBrightness": 0.5884,
+          "cloudCover": 10.2,
+          "normalizedCloudCover": 0.5517
+        },
+        {
+          "index": 24,
+          "imageUrl": "/earth-now/precipitation/frame_025.jpg",
+          "timeLabel": "2023-10-18 00:00 UTC",
+          "brightness": 91.1,
+          "normalizedBrightness": 0.6056,
+          "cloudCover": 10.2,
+          "normalizedCloudCover": 0.546
+        },
+        {
+          "index": 25,
+          "imageUrl": "/earth-now/precipitation/frame_026.jpg",
+          "timeLabel": "2023-10-18 02:00 UTC",
+          "brightness": 90.15,
+          "normalizedBrightness": 0.3441,
+          "cloudCover": 10.0,
+          "normalizedCloudCover": 0.4368
+        },
+        {
+          "index": 26,
+          "imageUrl": "/earth-now/precipitation/frame_027.jpg",
+          "timeLabel": "2023-10-18 04:00 UTC",
+          "brightness": 91.24,
+          "normalizedBrightness": 0.6463,
+          "cloudCover": 9.9,
+          "normalizedCloudCover": 0.3218
+        },
+        {
+          "index": 27,
+          "imageUrl": "/earth-now/precipitation/frame_028.jpg",
+          "timeLabel": "2023-10-18 06:00 UTC",
+          "brightness": 90.28,
+          "normalizedBrightness": 0.3788,
+          "cloudCover": 9.4,
+          "normalizedCloudCover": 0.0
+        },
+        {
+          "index": 28,
+          "imageUrl": "/earth-now/precipitation/frame_029.jpg",
+          "timeLabel": "2023-10-18 08:00 UTC",
+          "brightness": 90.8,
+          "normalizedBrightness": 0.5246,
+          "cloudCover": 9.9,
+          "normalizedCloudCover": 0.3391
+        },
+        {
+          "index": 29,
+          "imageUrl": "/earth-now/precipitation/frame_030.jpg",
+          "timeLabel": "2023-10-18 10:00 UTC",
+          "brightness": 91.21,
+          "normalizedBrightness": 0.6361,
+          "cloudCover": 10.1,
+          "normalizedCloudCover": 0.4655
+        },
+        {
+          "index": 30,
+          "imageUrl": "/earth-now/precipitation/frame_031.jpg",
+          "timeLabel": "2023-10-18 12:00 UTC",
+          "brightness": 90.89,
+          "normalizedBrightness": 0.5482,
+          "cloudCover": 10.2,
+          "normalizedCloudCover": 0.5517
+        },
+        {
+          "index": 31,
+          "imageUrl": "/earth-now/precipitation/frame_032.jpg",
+          "timeLabel": "2023-10-18 14:00 UTC",
+          "brightness": 91.11,
+          "normalizedBrightness": 0.6085,
+          "cloudCover": 10.0,
+          "normalizedCloudCover": 0.4483
+        },
+        {
+          "index": 32,
+          "imageUrl": "/earth-now/precipitation/frame_033.jpg",
+          "timeLabel": "2023-10-18 16:00 UTC",
+          "brightness": 90.39,
+          "normalizedBrightness": 0.4092,
+          "cloudCover": 10.2,
+          "normalizedCloudCover": 0.5632
+        },
+        {
+          "index": 33,
+          "imageUrl": "/earth-now/precipitation/frame_034.jpg",
+          "timeLabel": "2023-10-18 18:00 UTC",
+          "brightness": 91.26,
+          "normalizedBrightness": 0.6525,
+          "cloudCover": 10.3,
+          "normalizedCloudCover": 0.6494
+        },
+        {
+          "index": 34,
+          "imageUrl": "/earth-now/precipitation/frame_035.jpg",
+          "timeLabel": "2023-10-18 20:00 UTC",
+          "brightness": 90.47,
+          "normalizedBrightness": 0.4328,
+          "cloudCover": 10.4,
+          "normalizedCloudCover": 0.7241
+        },
+        {
+          "index": 35,
+          "imageUrl": "/earth-now/precipitation/frame_036.jpg",
+          "timeLabel": "2023-10-18 22:00 UTC",
+          "brightness": 91.34,
+          "normalizedBrightness": 0.6727,
+          "cloudCover": 10.7,
+          "normalizedCloudCover": 0.954
+        }
+      ],
+      "soundPreview": "Crisp pentatonic notes paired with bright cloud-mask noise texture"
+    }
+  ]
+}

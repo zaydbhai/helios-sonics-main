@@ -1,0 +1,86 @@
+appId: com.zaydbhai.heliossonics
+productName: Helios Sonics
+copyright: Copyright © 2026 Helios Sonics Contributors
+asar: true
+compression: maximum
+
+directories:
+  output: release
+  buildResources: build
+
+files:
+  - "dist/**/*"
+  - "dist-electron/**/*"
+  - "build/icon.png"
+  - "package.json"
+  - "!node_modules/vite/**/*"
+  - "!node_modules/@vitejs/**/*"
+  - "!node_modules/three/**/*"
+  - "!node_modules/@types/**/*"
+  - "!node_modules/tone/**/*"
+  - "!node_modules/react/**/*"
+  - "!node_modules/react-dom/**/*"
+  - "!node_modules/lucide-react/**/*"
+  - "!node_modules/motion/**/*"
+  - "!node_modules/tailwindcss/**/*"
+  - "!node_modules/@tailwindcss/**/*"
+  - "!node_modules/@google/**/*"
+  - "!node_modules/esbuild/**/*"
+  - "!node_modules/tsx/**/*"
+  - "!node_modules/typescript/**/*"
+
+extraResources:
+  - from: ".env.example"
+    to: ".env.example"
+
+win:
+  icon: build/icon.png
+  target:
+    - target: nsis
+      arch:
+        - x64
+    - target: portable
+      arch:
+        - x64
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: Helios Sonics
+
+portable:
+  artifactName: "Helios-Sonics-${version}-Windows-Portable.${ext}"
+
+mac:
+  icon: build/icon.png
+  category: public.app-category.music
+  identity: null
+  target:
+    - target: dmg
+      arch:
+        - arm64
+        - x64
+    - target: zip
+      arch:
+        - arm64
+        - x64
+
+dmg:
+  artifactName: "Helios-Sonics-${version}-macOS-${arch}.${ext}"
+
+linux:
+  icon: build/icon.png
+  category: AudioVideo;Science;Education
+  maintainer: zaydzia@gmail.com
+  target:
+    - target: AppImage
+      arch:
+        - x64
+    - target: deb
+      arch:
+        - x64
+
+appImage:
+  artifactName: "Helios-Sonics-${version}-Linux-${arch}.${ext}"
