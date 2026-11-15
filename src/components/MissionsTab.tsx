@@ -303,6 +303,32 @@ function evaluateSpectrumAtWavelength(
   };
 }
 
+function drawImageContain(
+  ctx: CanvasRenderingContext2D,
+  img: HTMLImageElement,
+  canvasW: number,
+  canvasH: number
+): void {
+  ctx.fillStyle = "#03060C";
+  ctx.fillRect(0, 0, canvasW, canvasH);
+  const nw = img.naturalWidth || canvasW;
+  const nh = img.naturalHeight || canvasH;
+  const imgAspect = nw / Math.max(1, nh);
+  const canvasAspect = canvasW / canvasH;
+  let drawW = canvasW;
+  let drawH = canvasH;
+  let offsetX = 0;
+  let offsetY = 0;
+  if (imgAspect > canvasAspect) {
+    drawH = canvasW / imgAspect;
+    offsetY = (canvasH - drawH) / 2;
+  } else {
+    drawW = canvasH * imgAspect;
+    offsetX = (canvasW - drawW) / 2;
+  }
+  ctx.drawImage(img, offsetX, offsetY, drawW, drawH);
+}
+
 export const MissionsTab = React.forwardRef<MissionsTabHandle, MissionsTabProps>(
   function MissionsTab({ isMuted = false, onToggleMute }, ref) {
     const engine = useMemo(() => new MissionSoundscapeEngine(), []);
@@ -508,9 +534,7 @@ export const MissionsTab = React.forwardRef<MissionsTabHandle, MissionsTabProps>
       if (!ctx) return;
 
       if (customImageLabel && chandraSourceImageRef.current) {
-        ctx.fillStyle = "#03060C";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(chandraSourceImageRef.current, 0, 0, canvas.width, canvas.height);
+        drawImageContain(ctx, chandraSourceImageRef.current, canvas.width, canvas.height);
         sampleChandraColumn(chandraXNorm, false);
         return;
       }
@@ -525,9 +549,7 @@ export const MissionsTab = React.forwardRef<MissionsTabHandle, MissionsTabProps>
       img.crossOrigin = "anonymous";
       img.onload = () => {
         if (cancelled) return;
-        ctx.fillStyle = "#03060C";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        drawImageContain(ctx, img, canvas.width, canvas.height);
         sampleChandraColumn(chandraXNorm, false);
       };
       img.src = proxyUrl;
@@ -1018,7 +1040,7 @@ export const MissionsTab = React.forwardRef<MissionsTabHandle, MissionsTabProps>
                   ref={chandraCanvasRef}
                   width={760}
                   height={400}
-                  className="w-full h-[340px] sm:h-[400px] block object-cover"
+                  className="w-full aspect-[19/10] block"
                 />
                 {/* Active vertical left-to-right scanline */}
                 <div
