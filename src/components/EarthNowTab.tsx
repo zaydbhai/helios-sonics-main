@@ -619,6 +619,8 @@ export const EarthNowTab = React.forwardRef<EarthNowTabHandle, EarthNowTabProps>
         setGibsStatus(
           usedDate === gibsDate
             ? `Loaded live NASA GIBS ${selectedGibsLayer} (${usedDate})`
+            : usedDate === 'static-black-marble'
+            ? `No live night imagery for ${gibsDate}; showing NASA Black Marble static night-lights map`
             : `Loaded live NASA GIBS ${selectedGibsLayer} (${usedDate}; no usable data for ${gibsDate}, showing nearest earlier day)`
         );
       } catch (err) {

@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import jpeg from 'jpeg-js';
 import { nasaProvider, type CustomDatasetIngestInput } from '../nasa/adapter.ts';
 import {
   autoSetupAndFetchNasaProjection,
@@ -207,6 +208,30 @@ nasaRouter.get('/nasa/gibs/layers', (_req, res) => {
   });
 });
 
+/**
+ * Fraction (0..1) of sampled pixels that are visibly non-black. Used to detect
+ * "no data" GIBS images, which come back as all-black JPEGs that are NOT small in bytes.
+ */
+function nonBlackFraction(buf: Buffer): number {
+  try {
+    const img = jpeg.decode(buf, { useTArray: true, maxMemoryUsageInMB: 512 });
+    const { data, width, height } = img;
+    const step = Math.max(1, Math.floor(Math.sqrt((width * height) / 60_000)));
+    let lit = 0;
+    let total = 0;
+    for (let y = 0; y < height; y += step) {
+      for (let x = 0; x < width; x += step) {
+        const i = (y * width + x) * 4;
+        if (data[i] + data[i + 1] + data[i + 2] > 45) lit++;
+        total++;
+      }
+    }
+    return total ? lit / total : 0;
+  } catch {
+    return 1; // can't decode (unexpected format): assume usable rather than reject
+  }
+}
+
 nasaRouter.get('/nasa/gibs/image', async (req, res) => {
   try {
     const layer =
@@ -223,8 +248,8 @@ nasaRouter.get('/nasa/gibs/image', async (req, res) => {
 
     // Vercel caps response bodies at ~4.5 MB, so stay safely below that.
     const MAX_BYTES = 4_000_000;
-    // A nearly-empty (all black) JPEG is tiny; treat that as "no data for this date".
-    const MIN_USEFUL_BYTES = 25_000;
+    // Below this share of non-black pixels we treat the image as "no data for this date".
+    const MIN_LIT_FRACTION = 0.01;
     const deadline = Date.now() + 24_000;
     const log: Array<Record<string, unknown>> = [];
 
@@ -245,8 +270,9 @@ nasaRouter.get('/nasa/gibs/image', async (req, res) => {
           return null;
         }
         const buf = Buffer.from(await upstream.arrayBuffer());
-        log.push({ label, http: upstream.status, type, bytes: buf.length });
-        return { type, buf };
+        const lit = nonBlackFraction(buf);
+        log.push({ label, http: upstream.status, type, bytes: buf.length, litPixels: Number(lit.toFixed(4)) });
+        return { type, buf, lit };
       } catch (err) {
         log.push({ label, error: err instanceof Error ? err.message : String(err) });
         return null;
@@ -294,8 +320,8 @@ nasaRouter.get('/nasa/gibs/image', async (req, res) => {
       });
     }
 
-    let best: { type: string; buf: Buffer; date: string } | null = null;
-    let blankFallback: { type: string; buf: Buffer; date: string } | null = null;
+    let best: { type: string; buf: Buffer; date: string; lit: number } | null = null;
+    let brightest: { type: string; buf: Buffer; date: string; lit: number } | null = null;
     for (const c of candidates) {
       const got = await tryFetch(c.label, c.url);
       if (!got) continue;
@@ -303,13 +329,14 @@ nasaRouter.get('/nasa/gibs/image', async (req, res) => {
         log.push({ label: c.label, note: 'too large, skipped' });
         continue;
       }
-      if (got.buf.length >= MIN_USEFUL_BYTES) {
-        best = { ...got, date: c.date };
+      const cand = { ...got, date: c.date };
+      if (got.lit >= MIN_LIT_FRACTION) {
+        best = cand;
         break;
       }
-      if (!blankFallback) blankFallback = { ...got, date: c.date };
+      if (!brightest || got.lit > brightest.lit) brightest = cand;
     }
-    best = best ?? blankFallback;
+    best = best ?? brightest;
 
     if (debug) {
       res.json({ layer, date, chosen: best ? { date: best.date, bytes: best.buf.length } : null, attempts: log });
