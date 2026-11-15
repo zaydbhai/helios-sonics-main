@@ -52,21 +52,41 @@ export function getDefaultGibsDate(offsetDays = 2): string {
   return target.toISOString().slice(0, 10);
 }
 
-export function buildGibsWmsUrl(layerId: string, dateStr: string, width = 960, height = 480): string {
+const GIBS_BASE = 'BlueMarble_ShadedRelief_Bathymetry';
+
+/**
+ * Optional layers drawn underneath the data layer so no-data areas (swath gaps,
+ * land under an ocean-only product) show terrain instead of flat black.
+ * In WMS, the first listed layer is drawn first (bottom).
+ */
+const GIBS_UNDERLAYS: Record<string, string[]> = {
+  MODIS_Terra_CorrectedReflectance_TrueColor: [GIBS_BASE, 'MODIS_Aqua_CorrectedReflectance_TrueColor'],
+  MODIS_Terra_Aerosol: [GIBS_BASE],
+  GHRSST_L4_MUR_Sea_Surface_Temperature: [GIBS_BASE],
+};
+
+export function buildGibsWmsUrl(
+  layerId: string,
+  dateStr: string,
+  width = 3072,
+  height = 1536,
+  useUnderlays = true
+): string {
   if (!ALLOWED_GIBS_LAYER_IDS.has(layerId)) {
     throw new Error(`Unsupported NASA GIBS layer '${layerId}'.`);
   }
   if (!isValidIsoDate(dateStr)) {
     throw new Error(`Invalid date '${dateStr}'. Expected YYYY-MM-DD.`);
   }
-  const safeW = Math.min(1200, Math.max(256, Math.round(width)));
-  const safeH = Math.min(600, Math.max(128, Math.round(height)));
+  const safeW = Math.min(4096, Math.max(256, Math.round(width)));
+  const safeH = Math.min(2048, Math.max(128, Math.round(height)));
+  const layers = [...(useUnderlays ? GIBS_UNDERLAYS[layerId] ?? [] : []), layerId];
 
   const params = new URLSearchParams({
     SERVICE: 'WMS',
     REQUEST: 'GetMap',
     VERSION: '1.3.0',
-    LAYERS: layerId,
+    LAYERS: layers.join(','),
     CRS: 'EPSG:4326',
     BBOX: '-90,-180,90,180',
     WIDTH: String(safeW),
@@ -76,6 +96,12 @@ export function buildGibsWmsUrl(layerId: string, dateStr: string, width = 960, h
   });
 
   return `https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?${params.toString()}`;
+}
+
+export function shiftIsoDate(dateStr: string, deltaDays: number): string {
+  return new Date(Date.parse(`${dateStr}T00:00:00Z`) + deltaDays * 86_400_000)
+    .toISOString()
+    .slice(0, 10);
 }
 
 function parseGoesClassFlux(classType?: string): number {

@@ -615,7 +615,12 @@ export const EarthNowTab = React.forwardRef<EarthNowTabHandle, EarthNowTabProps>
           if (prev && prev.startsWith('blob:')) URL.revokeObjectURL(prev);
           return objUrl;
         });
-        setGibsStatus(`Loaded live NASA GIBS ${selectedGibsLayer} (${gibsDate})`);
+        const usedDate = res.headers.get('X-Gibs-Date') || gibsDate;
+        setGibsStatus(
+          usedDate === gibsDate
+            ? `Loaded live NASA GIBS ${selectedGibsLayer} (${usedDate})`
+            : `Loaded live NASA GIBS ${selectedGibsLayer} (${usedDate}; no usable data for ${gibsDate}, showing nearest earlier day)`
+        );
       } catch (err) {
         setGibsStatus(
           err instanceof Error ? err.message : 'Unable to fetch NASA GIBS daily snapshot'

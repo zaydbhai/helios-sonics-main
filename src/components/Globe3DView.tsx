@@ -215,17 +215,19 @@ export function Globe3DView({
 
     // Offscreen CanvasTexture for Earth surface (updated cleanly from frame URLs or procedural fallback)
     const texCanvas = document.createElement('canvas');
-    texCanvas.width = 512;
-    texCanvas.height = 256;
+    const maxTex = renderer.capabilities.maxTextureSize || 2048;
+    const texW = isSoftwareGl ? 1024 : maxTex >= 4096 ? 4096 : 2048;
+    texCanvas.width = texW;
+    texCanvas.height = texW / 2;
     const texCtx = texCanvas.getContext('2d');
     if (texCtx) {
       paintProceduralPlanetTexture(texCtx, texCanvas.width, texCanvas.height, accentColor);
     }
     const earthTexture = new THREE.CanvasTexture(texCanvas);
     earthTexture.colorSpace = THREE.SRGBColorSpace;
-    earthTexture.anisotropy = isSoftwareGl ? 1 : 4;
+    earthTexture.anisotropy = isSoftwareGl ? 1 : Math.min(16, renderer.capabilities.getMaxAnisotropy());
 
-    const earthGeo = new THREE.SphereGeometry(2.0, 48, 32);
+    const earthGeo = new THREE.SphereGeometry(2.0, 96, 64);
     const earthMat = new THREE.MeshStandardMaterial({
       map: earthTexture,
       roughness: 0.72,
@@ -404,6 +406,8 @@ export function Globe3DView({
       img.crossOrigin = 'anonymous';
       img.onload = () => {
         if (reqId !== activeImgRequest || !texCtx) return;
+        texCtx.imageSmoothingEnabled = true;
+        texCtx.imageSmoothingQuality = 'high';
         texCtx.drawImage(img, 0, 0, texCanvas.width, texCanvas.height);
         earthTexture.needsUpdate = true;
       };

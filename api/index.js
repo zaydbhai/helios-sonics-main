@@ -24657,20 +24657,27 @@ function getDefaultGibsDate(offsetDays = 2) {
   const target = new Date(Date.now() - offsetDays * 864e5);
   return target.toISOString().slice(0, 10);
 }
-function buildGibsWmsUrl(layerId, dateStr, width = 960, height = 480) {
+var GIBS_BASE = "BlueMarble_ShadedRelief_Bathymetry";
+var GIBS_UNDERLAYS = {
+  MODIS_Terra_CorrectedReflectance_TrueColor: [GIBS_BASE, "MODIS_Aqua_CorrectedReflectance_TrueColor"],
+  MODIS_Terra_Aerosol: [GIBS_BASE],
+  GHRSST_L4_MUR_Sea_Surface_Temperature: [GIBS_BASE]
+};
+function buildGibsWmsUrl(layerId, dateStr, width = 3072, height = 1536, useUnderlays = true) {
   if (!ALLOWED_GIBS_LAYER_IDS.has(layerId)) {
     throw new Error(`Unsupported NASA GIBS layer '${layerId}'.`);
   }
   if (!isValidIsoDate(dateStr)) {
     throw new Error(`Invalid date '${dateStr}'. Expected YYYY-MM-DD.`);
   }
-  const safeW = Math.min(1200, Math.max(256, Math.round(width)));
-  const safeH = Math.min(600, Math.max(128, Math.round(height)));
+  const safeW = Math.min(4096, Math.max(256, Math.round(width)));
+  const safeH = Math.min(2048, Math.max(128, Math.round(height)));
+  const layers = [...useUnderlays ? GIBS_UNDERLAYS[layerId] ?? [] : [], layerId];
   const params = new URLSearchParams({
     SERVICE: "WMS",
     REQUEST: "GetMap",
     VERSION: "1.3.0",
-    LAYERS: layerId,
+    LAYERS: layers.join(","),
     CRS: "EPSG:4326",
     BBOX: "-90,-180,90,180",
     WIDTH: String(safeW),
@@ -24679,6 +24686,9 @@ function buildGibsWmsUrl(layerId, dateStr, width = 960, height = 480) {
     TIME: dateStr
   });
   return `https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?${params.toString()}`;
+}
+function shiftIsoDate(dateStr, deltaDays) {
+  return new Date(Date.parse(`${dateStr}T00:00:00Z`) + deltaDays * 864e5).toISOString().slice(0, 10);
 }
 function parseGoesClassFlux(classType) {
   if (!classType || typeof classType !== "string") return 1e-7;
@@ -25563,26 +25573,56 @@ nasaRouter.get("/nasa/gibs/image", async (req, res) => {
   try {
     const layer = typeof req.query.layer === "string" && req.query.layer.trim() ? req.query.layer.trim() : SUPPORTED_GIBS_LAYERS[0].id;
     const date = typeof req.query.date === "string" && req.query.date.trim() ? req.query.date.trim() : getDefaultGibsDate(2);
-    const width = typeof req.query.width === "string" ? Number(req.query.width) : 960;
-    const height = typeof req.query.height === "string" ? Number(req.query.height) : 480;
-    const upstreamUrl = buildGibsWmsUrl(layer, date, width, height);
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 1e4);
-    const upstream = await fetch(upstreamUrl, { signal: controller.signal });
-    clearTimeout(timeoutId);
-    if (!upstream.ok) {
-      res.status(502).json({ error: `NASA GIBS upstream returned HTTP ${upstream.status}` });
+    const width = typeof req.query.width === "string" ? Number(req.query.width) : 3072;
+    const height = typeof req.query.height === "string" ? Number(req.query.height) : 1536;
+    const MAX_BYTES = 4e6;
+    const MIN_USEFUL_BYTES = 25e3;
+    const deadline = Date.now() + 24e3;
+    const tryFetch = async (url) => {
+      const remaining = deadline - Date.now();
+      if (remaining < 1500) return null;
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), Math.min(12e3, remaining));
+      try {
+        const upstream = await fetch(url, { signal: controller.signal });
+        if (!upstream.ok) return null;
+        const type = upstream.headers.get("content-type") || "";
+        if (!type.startsWith("image/")) return null;
+        return { type, buf: Buffer.from(await upstream.arrayBuffer()) };
+      } catch {
+        return null;
+      } finally {
+        clearTimeout(timeoutId);
+      }
+    };
+    const attempts = [
+      [width, height, true],
+      [2048, 1024, true],
+      [2048, 1024, false]
+    ];
+    let best = null;
+    outer: for (let back = 0; back <= 3; back++) {
+      const d = back === 0 ? date : shiftIsoDate(date, -back);
+      for (const [w, h, under] of attempts) {
+        const got = await tryFetch(buildGibsWmsUrl(layer, d, w, h, under));
+        if (!got) continue;
+        if (got.buf.length > MAX_BYTES) continue;
+        if (got.buf.length >= MIN_USEFUL_BYTES) {
+          best = { ...got, date: d };
+          break outer;
+        }
+        if (!best) best = { ...got, date: d };
+        break;
+      }
+    }
+    if (!best) {
+      res.status(502).json({ error: "NASA GIBS did not return imagery for this layer/date. Try an earlier date." });
       return;
     }
-    const contentType = upstream.headers.get("content-type") || "image/jpeg";
-    if (!contentType.startsWith("image/")) {
-      res.status(502).json({ error: "NASA GIBS did not return a valid satellite image." });
-      return;
-    }
-    const arrayBuffer = await upstream.arrayBuffer();
-    res.setHeader("Content-Type", contentType);
+    res.setHeader("Content-Type", best.type);
     res.setHeader("Cache-Control", "public, max-age=3600");
-    res.send(Buffer.from(arrayBuffer));
+    res.setHeader("X-Gibs-Date", best.date);
+    res.send(best.buf);
   } catch (error) {
     res.status(400).json({
       error: error instanceof Error ? error.message : "Failed to proxy NASA GIBS snapshot"

@@ -3,6 +3,7 @@ import { nasaProvider, type CustomDatasetIngestInput } from '../nasa/adapter.ts'
 import {
   autoSetupAndFetchNasaProjection,
   buildGibsWmsUrl,
+  shiftIsoDate,
   connectCustomNasaApi,
   fetchDonkiSpaceWeatherDataset,
   fetchLiveIssTelemetry,
@@ -215,30 +216,65 @@ nasaRouter.get('/nasa/gibs/image', async (req, res) => {
       typeof req.query.date === 'string' && req.query.date.trim()
         ? req.query.date.trim()
         : getDefaultGibsDate(2);
-    const width = typeof req.query.width === 'string' ? Number(req.query.width) : 960;
-    const height = typeof req.query.height === 'string' ? Number(req.query.height) : 480;
+    const width = typeof req.query.width === 'string' ? Number(req.query.width) : 3072;
+    const height = typeof req.query.height === 'string' ? Number(req.query.height) : 1536;
 
-    const upstreamUrl = buildGibsWmsUrl(layer, date, width, height);
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000);
-    const upstream = await fetch(upstreamUrl, { signal: controller.signal });
-    clearTimeout(timeoutId);
+    // Vercel caps response bodies at ~4.5 MB, so stay safely below that.
+    const MAX_BYTES = 4_000_000;
+    // A nearly-empty (all black) JPEG is tiny; treat that as "no data for this date".
+    const MIN_USEFUL_BYTES = 25_000;
+    const deadline = Date.now() + 24_000;
 
-    if (!upstream.ok) {
-      res.status(502).json({ error: `NASA GIBS upstream returned HTTP ${upstream.status}` });
+    const tryFetch = async (url: string) => {
+      const remaining = deadline - Date.now();
+      if (remaining < 1500) return null;
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), Math.min(12_000, remaining));
+      try {
+        const upstream = await fetch(url, { signal: controller.signal });
+        if (!upstream.ok) return null;
+        const type = upstream.headers.get('content-type') || '';
+        if (!type.startsWith('image/')) return null;
+        return { type, buf: Buffer.from(await upstream.arrayBuffer()) };
+      } catch {
+        return null;
+      } finally {
+        clearTimeout(timeoutId);
+      }
+    };
+
+    // Try the requested date first, then up to 3 earlier days if imagery is missing/blank.
+    // Within a date: high-res with underlays -> mid-res with underlays -> plain layer.
+    const attempts: Array<[number, number, boolean]> = [
+      [width, height, true],
+      [2048, 1024, true],
+      [2048, 1024, false],
+    ];
+    let best: { type: string; buf: Buffer; date: string } | null = null;
+    outer: for (let back = 0; back <= 3; back++) {
+      const d = back === 0 ? date : shiftIsoDate(date, -back);
+      for (const [w, h, under] of attempts) {
+        const got = await tryFetch(buildGibsWmsUrl(layer, d, w, h, under));
+        if (!got) continue;
+        if (got.buf.length > MAX_BYTES) continue; // too big for the platform; try smaller
+        if (got.buf.length >= MIN_USEFUL_BYTES) {
+          best = { ...got, date: d };
+          break outer;
+        }
+        if (!best) best = { ...got, date: d }; // keep as last-resort fallback
+        break; // blank result: move to the previous day instead of trying other sizes
+      }
+    }
+
+    if (!best) {
+      res.status(502).json({ error: 'NASA GIBS did not return imagery for this layer/date. Try an earlier date.' });
       return;
     }
 
-    const contentType = upstream.headers.get('content-type') || 'image/jpeg';
-    if (!contentType.startsWith('image/')) {
-      res.status(502).json({ error: 'NASA GIBS did not return a valid satellite image.' });
-      return;
-    }
-
-    const arrayBuffer = await upstream.arrayBuffer();
-    res.setHeader('Content-Type', contentType);
+    res.setHeader('Content-Type', best.type);
     res.setHeader('Cache-Control', 'public, max-age=3600');
-    res.send(Buffer.from(arrayBuffer));
+    res.setHeader('X-Gibs-Date', best.date);
+    res.send(best.buf);
   } catch (error) {
     res.status(400).json({
       error: error instanceof Error ? error.message : 'Failed to proxy NASA GIBS snapshot',
