@@ -45,3 +45,15 @@
     transform: scale(1.15);
   }
 }
+
+
+/* ---- Mobile polish (phones) ---- */
+html { -webkit-text-size-adjust: 100%; }
+button, a, [role="button"] { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+@media (max-width: 639px) {
+  .text-\[9px\]  { font-size: 11px !important; }
+  .text-\[10px\] { font-size: 11.5px !important; }
+  .text-\[11px\] { font-size: 12px !important; }
+  input[type="range"] { min-height: 28px; }
+  select, input[type="text"], input[type="date"], input[type="password"] { font-size: 16px; } /* stops iOS zoom-on-focus */
+}

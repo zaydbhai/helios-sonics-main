@@ -773,7 +773,7 @@ export const EarthNowTab = React.forwardRef<EarthNowTabHandle, EarthNowTabProps>
               </h1>
             </div>
 
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex flex-nowrap md:flex-wrap items-center gap-2 overflow-x-auto md:overflow-visible pb-1 md:pb-0 [&>*]:shrink-0">
               <button
                 type="button"
                 onClick={() => setShowIntro((v) => !v)}
@@ -1032,7 +1032,7 @@ export const EarthNowTab = React.forwardRef<EarthNowTabHandle, EarthNowTabProps>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="flex md:grid md:grid-cols-3 gap-3 md:gap-4 overflow-x-auto md:overflow-visible snap-x snap-mandatory md:snap-none pb-2 md:pb-0">
               {catalog.tracks.map((track, idx) => {
                 const isSelected = !dualStereoMode && track.id === activeTrack.id;
                 const isInStereo =
@@ -1046,7 +1046,7 @@ export const EarthNowTab = React.forwardRef<EarthNowTabHandle, EarthNowTabProps>
                     type="button"
                     onClick={() => handleSelectTrack(track.id)}
                     aria-pressed={isSelected || isInStereo}
-                    className={`group text-left border transition-colors cursor-pointer overflow-hidden flex flex-col ${focusRing} ${
+                    className={`group text-left border transition-colors cursor-pointer overflow-hidden flex flex-col shrink-0 w-[78%] sm:w-[46%] md:w-auto snap-start ${focusRing} ${
                       isSelected
                         ? highContrast
                           ? 'bg-black border-yellow-300 ring-1 ring-yellow-300'

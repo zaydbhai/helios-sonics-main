@@ -479,9 +479,9 @@ export default function App() {
   );
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#07090E] text-slate-100">
+    <div className="min-h-screen flex flex-col bg-[#07090E] text-slate-100 pb-[calc(3.5rem+env(safe-area-inset-bottom))] md:pb-0">
       {/* Top Bar Contract: 3 zones separated by gap-8 */}
-      <header className="h-14 border-b border-slate-800 bg-[#0B0F19] px-6 flex items-center justify-between gap-8 shrink-0">
+      <header className="h-14 border-b border-slate-800 bg-[#0B0F19] px-3 sm:px-6 flex items-center justify-between gap-3 md:gap-8 shrink-0 sticky top-0 z-40 md:static">
         {/* Zone 1: Single-element brand wordmark */}
         <button
           type="button"
@@ -492,7 +492,7 @@ export default function App() {
         </button>
 
         {/* Zone 2: Clean single-line text navigation links */}
-        <nav aria-label="Primary navigation" className="flex items-center gap-6 overflow-x-auto">
+        <nav aria-label="Primary navigation" className="fixed bottom-0 inset-x-0 z-50 grid grid-cols-5 bg-[#0B0F19] border-t border-slate-800 pb-[env(safe-area-inset-bottom)] md:static md:z-auto md:flex md:items-center md:gap-6 md:overflow-x-auto md:border-0 md:bg-transparent md:pb-0">
           {(
             [
               { id: 'home', label: 'Home' },
@@ -506,9 +506,9 @@ export default function App() {
               key={item.id}
               type="button"
               onClick={() => navigateToView(item.id)}
-              className={`text-sm font-medium pb-0.5 border-b-2 transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+              className={`text-[11px] md:text-sm font-medium py-3.5 md:py-0 md:pb-0.5 border-t-2 md:border-t-0 md:border-b-2 transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
                 activeView === item.id
-                  ? 'border-cyan-400 text-slate-100'
+                  ? 'border-cyan-400 text-slate-100 bg-slate-900/60 md:bg-transparent'
                   : 'border-transparent text-slate-400 hover:text-slate-200'
               }`}
             >
@@ -522,10 +522,11 @@ export default function App() {
           <button
             type="button"
             onClick={() => setUploadModalOpen(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium bg-cyan-500 text-slate-950 hover:bg-cyan-400 transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+            className="inline-flex items-center gap-2 px-3 md:px-4 py-2 text-xs font-medium bg-cyan-500 text-slate-950 hover:bg-cyan-400 transition-colors whitespace-nowrap shrink-0 cursor-pointer"
           >
             <Upload className="w-3.5 h-3.5" />
-            Load Audio / CSV
+            <span className="hidden sm:inline">Load Audio / CSV</span>
+            <span className="sm:hidden">Load</span>
           </button>
         </div>
       </header>
@@ -617,10 +618,21 @@ export default function App() {
             </div>
           )}
 
+          {/* Mobile-only floating Play/Pause (controls column sits below the visual on phones) */}
+          <button
+            type="button"
+            onClick={handleTogglePlayback}
+            aria-label={isPlaying ? 'Pause audio' : 'Play sonification'}
+            className="lg:hidden fixed right-4 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-40 inline-flex items-center gap-2 px-4 py-3 text-sm font-semibold bg-cyan-500 text-slate-950 shadow-lg shadow-black/50 active:bg-cyan-400"
+          >
+            {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+            {isPlaying ? 'Pause' : 'Play'}
+          </button>
+
           {/* Asymmetric Split Console */}
           <div className="flex-1 flex flex-col lg:flex-row min-h-0">
             {/* Left Control & Parameter Column (340px on desktop) */}
-            <aside className="w-full lg:w-[340px] shrink-0 border-b lg:border-b-0 lg:border-r border-slate-800 bg-[#0B0F19] flex flex-col justify-between overflow-y-auto">
+            <aside className="order-2 lg:order-1 w-full lg:w-[340px] shrink-0 border-b lg:border-b-0 lg:border-r border-slate-800 bg-[#0B0F19] flex flex-col justify-between overflow-y-auto">
               <div className="p-4 space-y-6">
                 {/* 1. Audio Input Source Selector */}
                 <div>
@@ -1060,7 +1072,7 @@ export default function App() {
             </aside>
 
             {/* Right Primary Canvas + Bottom Telemetry Tray */}
-            <main className="flex-1 flex flex-col min-w-0 min-h-0">
+            <main className="order-1 lg:order-2 flex-1 flex flex-col min-w-0 min-h-0">
               <VisualizationStage
                 ref={stageRef}
                 engine={engine}
