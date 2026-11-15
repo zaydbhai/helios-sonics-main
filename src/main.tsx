@@ -1,3 +1,4 @@
+import './audio/mobileAudioUnlock'; // must stay first: wraps AudioContext before Tone.js loads
 import {createRoot} from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
