@@ -57,3 +57,51 @@ button, a, [role="button"] { touch-action: manipulation; -webkit-tap-highlight-c
   input[type="range"] { min-height: 28px; }
   select, input[type="text"], input[type="date"], input[type="password"] { font-size: 16px; } /* stops iOS zoom-on-focus */
 }
+
+
+/* ---- Global Accessibility Modes ---- */
+html.a11y-large-text {
+  font-size: 118.75%;
+}
+
+html.a11y-reduce-motion *,
+html.a11y-reduce-motion *::before,
+html.a11y-reduce-motion *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+html.a11y-high-contrast,
+html.a11y-high-contrast body {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+html.a11y-high-contrast header,
+html.a11y-high-contrast nav,
+html.a11y-high-contrast aside,
+html.a11y-high-contrast section,
+html.a11y-high-contrast main,
+html.a11y-high-contrast [class*="bg-[#0B0F19]"],
+html.a11y-high-contrast [class*="bg-[#07090E]"],
+html.a11y-high-contrast [class*="bg-[#111827]"] {
+  background-color: #000000 !important;
+  border-color: #ffffff !important;
+}
+
+html.a11y-high-contrast [class*="text-slate-400"],
+html.a11y-high-contrast [class*="text-slate-500"],
+html.a11y-high-contrast [class*="text-slate-300"] {
+  color: #f8fafc !important;
+}
+
+html.a11y-high-contrast [class*="text-cyan-"] {
+  color: #fde047 !important;
+}
+
+html.a11y-high-contrast *:focus-visible {
+  outline: 2px solid #fde047 !important;
+  outline-offset: 2px !important;
+}

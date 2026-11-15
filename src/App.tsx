@@ -11,6 +11,7 @@ import {
   Sliders,
   Layers,
   Upload,
+  Accessibility,
 } from 'lucide-react';
 import {
   buildAutoCalibratedParams,
@@ -25,7 +26,7 @@ import {
 } from './components/VisualizationStage';
 import { TelemetryTray } from './components/TelemetryTray';
 import { BackendConsole } from './components/BackendConsole';
-import { EarthNowTab, type EarthNowTabHandle } from './components/EarthNowTab';
+import { EarthNowTab, type EarthNowTabHandle, type GlobalA11yProps } from './components/EarthNowTab';
 import { HomeTab } from './components/HomeTab';
 import { MissionsTab, type MissionsTabHandle } from './components/MissionsTab';
 import { UploadModal } from './components/UploadModal';
@@ -135,6 +136,24 @@ export default function App() {
     return 'home';
   });
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
+
+  // Global Accessibility State
+  const [a11yMenuOpen, setA11yMenuOpen] = useState(false);
+  const [largerText, setLargerText] = useState(false);
+  const [highContrast, setHighContrast] = useState(false);
+  const [reduceMotion, setReduceMotion] = useState(() =>
+    typeof window !== "undefined"
+      ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      : false
+  );
+  const [spokenNarration, setSpokenNarration] = useState(false);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.toggle("a11y-large-text", largerText);
+    root.classList.toggle("a11y-high-contrast", highContrast);
+    root.classList.toggle("a11y-reduce-motion", reduceMotion);
+  }, [largerText, highContrast, reduceMotion]);
   const [donkiLoading, setDonkiLoading] = useState<'FLR' | 'GST' | null>(null);
   const [donkiNotice, setDonkiNotice] = useState<string | null>(null);
 
@@ -467,6 +486,84 @@ export default function App() {
     return summaries.filter((s) => s.domain === domainFilter);
   }, [summaries, domainFilter]);
 
+  const speakAnnouncement = useCallback(
+    (text: string) => {
+      if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+      const clean = text.replace(/\s+/g, " ").trim();
+      if (!clean) return;
+      try {
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(clean.slice(0, 180));
+        u.rate = 1.08;
+        u.volume = isMuted ? 0 : 0.9;
+        window.speechSynthesis.speak(u);
+      } catch {
+        // Ignore browser speech synthesis failures
+      }
+    },
+    [isMuted]
+  );
+
+  useEffect(() => {
+    if (!spokenNarration) {
+      if (typeof window !== "undefined" && "speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+      return;
+    }
+
+    const describeEl = (el: HTMLElement | null): string => {
+      if (!el) return "";
+      const target = el.closest("button, a, select, input, [role='button'], [tabindex]") as HTMLElement | null;
+      if (!target) return "";
+      const label =
+        target.getAttribute("aria-label") ||
+        target.getAttribute("title") ||
+        (target instanceof HTMLInputElement && target.type === "range"
+          ? `${target.getAttribute("aria-label") || "Slider"} ${target.value}`
+          : "") ||
+        target.textContent ||
+        "";
+      return label.replace(/\s+/g, " ").trim();
+    };
+
+    const onFocus = (e: FocusEvent) => {
+      const text = describeEl(e.target as HTMLElement | null);
+      if (text) speakAnnouncement(text);
+    };
+    const onClick = (e: MouseEvent) => {
+      const text = describeEl(e.target as HTMLElement | null);
+      if (text) speakAnnouncement(text);
+    };
+
+    document.addEventListener("focusin", onFocus);
+    document.addEventListener("click", onClick);
+    return () => {
+      document.removeEventListener("focusin", onFocus);
+      document.removeEventListener("click", onClick);
+    };
+  }, [spokenNarration, speakAnnouncement]);
+
+  const globalA11y: GlobalA11yProps = useMemo(
+    () => ({
+      reduceMotion,
+      onToggleReduceMotion: () => setReduceMotion((v) => !v),
+      largerText,
+      onToggleLargerText: () => setLargerText((v) => !v),
+      highContrast,
+      onToggleHighContrast: () => setHighContrast((v) => !v),
+      spokenNarration,
+      onToggleSpokenNarration: () =>
+        setSpokenNarration((v) => {
+          const next = !v;
+          if (next) speakAnnouncement("Voice over enabled");
+          return next;
+        }),
+      speakAnnouncement,
+    }),
+    [reduceMotion, largerText, highContrast, spokenNarration, speakAnnouncement]
+  );
+
   const navigateToView = useCallback(
     (nextView: ActiveView) => {
       if (nextView !== 'observatory' && isPlaying) {
@@ -474,8 +571,9 @@ export default function App() {
         setIsPlaying(false);
       }
       setActiveView(nextView);
+      if (spokenNarration) speakAnnouncement(`Opened ${nextView.replace("-", " ")} view`);
     },
-    [engine, isPlaying]
+    [engine, isPlaying, spokenNarration, speakAnnouncement]
   );
 
   return (
@@ -517,8 +615,79 @@ export default function App() {
           ))}
         </nav>
 
-        {/* Zone 3: Single primary CTA */}
-        <div className="shrink-0">
+        {/* Zone 3: Accessibility + Primary CTA */}
+        <div className="relative flex items-center gap-2 shrink-0">
+          <button
+            type="button"
+            onClick={() => setA11yMenuOpen((v) => !v)}
+            aria-expanded={a11yMenuOpen}
+            aria-label="Global Accessibility Settings"
+            className={`inline-flex items-center gap-1.5 px-2.5 py-2 text-xs font-medium border transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+              largerText || highContrast || reduceMotion || spokenNarration
+                ? "border-cyan-400 bg-[#111827] text-cyan-300"
+                : "border-slate-700 bg-[#07090E] text-slate-300 hover:border-slate-500"
+            }`}
+          >
+            <Accessibility className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Accessibility</span>
+          </button>
+
+          {a11yMenuOpen && (
+            <div
+              role="region"
+              aria-label="Global Accessibility Controls"
+              className="absolute right-0 top-12 z-50 w-64 border border-slate-700 bg-[#0B0F19] p-3 shadow-xl space-y-2 text-xs"
+            >
+              <div className="font-semibold text-slate-100 pb-1 border-b border-slate-800">
+                Global Accessibility
+              </div>
+              <button
+                type="button"
+                onClick={globalA11y.onToggleLargerText}
+                aria-pressed={largerText}
+                className={`w-full flex items-center justify-between px-2.5 py-2 border cursor-pointer ${
+                  largerText ? "border-cyan-400 bg-[#111827] text-cyan-300" : "border-slate-800 bg-[#07090E] text-slate-300"
+                }`}
+              >
+                <span>Larger Text</span>
+                <span className="font-mono">{largerText ? "ON" : "OFF"}</span>
+              </button>
+              <button
+                type="button"
+                onClick={globalA11y.onToggleHighContrast}
+                aria-pressed={highContrast}
+                className={`w-full flex items-center justify-between px-2.5 py-2 border cursor-pointer ${
+                  highContrast ? "border-cyan-400 bg-[#111827] text-cyan-300" : "border-slate-800 bg-[#07090E] text-slate-300"
+                }`}
+              >
+                <span>High Contrast</span>
+                <span className="font-mono">{highContrast ? "ON" : "OFF"}</span>
+              </button>
+              <button
+                type="button"
+                onClick={globalA11y.onToggleReduceMotion}
+                aria-pressed={reduceMotion}
+                className={`w-full flex items-center justify-between px-2.5 py-2 border cursor-pointer ${
+                  reduceMotion ? "border-cyan-400 bg-[#111827] text-cyan-300" : "border-slate-800 bg-[#07090E] text-slate-300"
+                }`}
+              >
+                <span>Reduce Motion</span>
+                <span className="font-mono">{reduceMotion ? "ON" : "OFF"}</span>
+              </button>
+              <button
+                type="button"
+                onClick={globalA11y.onToggleSpokenNarration}
+                aria-pressed={spokenNarration}
+                className={`w-full flex items-center justify-between px-2.5 py-2 border cursor-pointer ${
+                  spokenNarration ? "border-cyan-400 bg-[#111827] text-cyan-300" : "border-slate-800 bg-[#07090E] text-slate-300"
+                }`}
+              >
+                <span>Voice Over</span>
+                <span className="font-mono">{spokenNarration ? "ON" : "OFF"}</span>
+              </button>
+            </div>
+          )}
+
           <button
             type="button"
             onClick={() => setUploadModalOpen(true)}
@@ -541,6 +710,7 @@ export default function App() {
             ref={earthNowRef}
             isMuted={isMuted}
             onToggleMute={handleToggleMute}
+            a11y={globalA11y}
           />
         </main>
       ) : activeView === 'missions' ? (

@@ -62,9 +62,22 @@ export interface EarthNowTabHandle {
   resetTimeline: () => void;
 }
 
+export interface GlobalA11yProps {
+  reduceMotion: boolean;
+  onToggleReduceMotion: () => void;
+  largerText: boolean;
+  onToggleLargerText: () => void;
+  highContrast: boolean;
+  onToggleHighContrast: () => void;
+  spokenNarration: boolean;
+  onToggleSpokenNarration: () => void;
+  speakAnnouncement: (text: string) => void;
+}
+
 interface EarthNowTabProps {
   isMuted?: boolean;
   onToggleMute?: () => void;
+  a11y?: GlobalA11yProps;
 }
 
 function getInitialParam(key: string): string | null {
@@ -73,7 +86,7 @@ function getInitialParam(key: string): string | null {
 }
 
 export const EarthNowTab = React.forwardRef<EarthNowTabHandle, EarthNowTabProps>(
-  function EarthNowTab({ isMuted = false, onToggleMute }, ref) {
+  function EarthNowTab({ isMuted = false, onToggleMute, a11y }, ref) {
     const engine = useMemo(() => new EarthNowAudioEngine(), []);
     const containerRef = useRef<HTMLDivElement | null>(null);
     const stageImgContainerRef = useRef<HTMLDivElement | null>(null);
@@ -149,16 +162,32 @@ export const EarthNowTab = React.forwardRef<EarthNowTabHandle, EarthNowTabProps>
     // Recording, Sharing & Spoken Narration
     const [isRecording, setIsRecording] = useState<boolean>(false);
     const [shareCopied, setShareCopied] = useState<boolean>(false);
-    const [spokenNarration, setSpokenNarration] = useState<boolean>(false);
+    const [localSpokenNarration, setLocalSpokenNarration] = useState<boolean>(false);
+    const spokenNarration = a11y ? a11y.spokenNarration : localSpokenNarration;
+    const setSpokenNarration = (v: boolean | ((prev: boolean) => boolean)) => {
+      if (a11y) { a11y.onToggleSpokenNarration(); } else { setLocalSpokenNarration(v); }
+    };
 
     // Accessibility & Intro State
-    const [highContrast, setHighContrast] = useState<boolean>(false);
-    const [largerText, setLargerText] = useState<boolean>(false);
-    const [reduceMotion, setReduceMotion] = useState<boolean>(() =>
-      typeof window !== 'undefined'
-        ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const [localHighContrast, setLocalHighContrast] = useState<boolean>(false);
+    const highContrast = a11y ? a11y.highContrast : localHighContrast;
+    const setHighContrast = (v: boolean | ((prev: boolean) => boolean)) => {
+      if (a11y) { a11y.onToggleHighContrast(); } else { setLocalHighContrast(v); }
+    };
+    const [localLargerText, setLocalLargerText] = useState<boolean>(false);
+    const largerText = a11y ? a11y.largerText : localLargerText;
+    const setLargerText = (v: boolean | ((prev: boolean) => boolean)) => {
+      if (a11y) { a11y.onToggleLargerText(); } else { setLocalLargerText(v); }
+    };
+    const [localReduceMotion, setLocalReduceMotion] = useState<boolean>(() =>
+      typeof window !== "undefined"
+        ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
         : false
     );
+    const reduceMotion = a11y ? a11y.reduceMotion : localReduceMotion;
+    const setReduceMotion = (v: boolean | ((prev: boolean) => boolean)) => {
+      if (a11y) { a11y.onToggleReduceMotion(); } else { setLocalReduceMotion(v); }
+    };
     const [showIntro, setShowIntro] = useState<boolean>(true);
     const [hasPlayedOnce, setHasPlayedOnce] = useState<boolean>(false);
 

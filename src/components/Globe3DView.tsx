@@ -449,7 +449,7 @@ export function Globe3DView({
 
       const state = liveStateRef.current;
 
-      if (!state.reduceMotion) {
+      if (!state.reduceMotion && !document.documentElement.classList.contains("a11y-reduce-motion")) {
         const spinSpeed = state.isPlaying ? 0.16 : 0.045;
         globeGroup.rotation.y += dt * spinSpeed;
         satOrbitPivot.rotation.y += dt * (state.isPlaying ? 0.48 : 0.14);
