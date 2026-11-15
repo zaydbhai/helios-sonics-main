@@ -24687,6 +24687,21 @@ function buildGibsWmsUrl(layerId, dateStr, width = 3072, height = 1536, useUnder
   });
   return `https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?${params.toString()}`;
 }
+function buildGibsRawUrl(layersCsv, dateStr, width, height) {
+  const params = new URLSearchParams({
+    SERVICE: "WMS",
+    REQUEST: "GetMap",
+    VERSION: "1.3.0",
+    LAYERS: layersCsv,
+    CRS: "EPSG:4326",
+    BBOX: "-90,-180,90,180",
+    WIDTH: String(Math.min(4096, Math.max(256, Math.round(width)))),
+    HEIGHT: String(Math.min(2048, Math.max(128, Math.round(height)))),
+    FORMAT: "image/jpeg"
+  });
+  if (dateStr) params.set("TIME", dateStr);
+  return `https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?${params.toString()}`;
+}
 function shiftIsoDate(dateStr, deltaDays) {
   return new Date(Date.parse(`${dateStr}T00:00:00Z`) + deltaDays * 864e5).toISOString().slice(0, 10);
 }
@@ -25575,45 +25590,90 @@ nasaRouter.get("/nasa/gibs/image", async (req, res) => {
     const date = typeof req.query.date === "string" && req.query.date.trim() ? req.query.date.trim() : getDefaultGibsDate(2);
     const width = typeof req.query.width === "string" ? Number(req.query.width) : 3072;
     const height = typeof req.query.height === "string" ? Number(req.query.height) : 1536;
+    const debug = req.query.debug === "1";
     const MAX_BYTES = 4e6;
     const MIN_USEFUL_BYTES = 25e3;
     const deadline = Date.now() + 24e3;
-    const tryFetch = async (url) => {
+    const log = [];
+    const tryFetch = async (label, url) => {
       const remaining = deadline - Date.now();
-      if (remaining < 1500) return null;
+      if (remaining < 1500) {
+        log.push({ label, skipped: "time budget exhausted" });
+        return null;
+      }
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), Math.min(12e3, remaining));
       try {
         const upstream = await fetch(url, { signal: controller.signal });
-        if (!upstream.ok) return null;
         const type = upstream.headers.get("content-type") || "";
-        if (!type.startsWith("image/")) return null;
-        return { type, buf: Buffer.from(await upstream.arrayBuffer()) };
-      } catch {
+        if (!upstream.ok || !type.startsWith("image/")) {
+          const text = type.startsWith("image/") ? "" : (await upstream.text()).slice(0, 200);
+          log.push({ label, http: upstream.status, type, note: text });
+          return null;
+        }
+        const buf = Buffer.from(await upstream.arrayBuffer());
+        log.push({ label, http: upstream.status, type, bytes: buf.length });
+        return { type, buf };
+      } catch (err) {
+        log.push({ label, error: err instanceof Error ? err.message : String(err) });
         return null;
       } finally {
         clearTimeout(timeoutId);
       }
     };
-    const attempts = [
-      [width, height, true],
-      [2048, 1024, true],
-      [2048, 1024, false]
-    ];
-    let best = null;
-    outer: for (let back = 0; back <= 3; back++) {
+    const candidates = [];
+    for (let back = 0; back <= 5; back++) {
       const d = back === 0 ? date : shiftIsoDate(date, -back);
-      for (const [w, h, under] of attempts) {
-        const got = await tryFetch(buildGibsWmsUrl(layer, d, w, h, under));
-        if (!got) continue;
-        if (got.buf.length > MAX_BYTES) continue;
-        if (got.buf.length >= MIN_USEFUL_BYTES) {
-          best = { ...got, date: d };
-          break outer;
-        }
-        if (!best) best = { ...got, date: d };
+      candidates.push({
+        label: `${layer} ${d} ${width}px+base`,
+        url: buildGibsWmsUrl(layer, d, width, height, true),
+        date: d
+      });
+    }
+    candidates.push({
+      label: `${layer} ${date} 2048px+base`,
+      url: buildGibsWmsUrl(layer, date, 2048, 1024, true),
+      date
+    });
+    candidates.push({
+      label: `${layer} ${date} 2048px plain`,
+      url: buildGibsWmsUrl(layer, date, 2048, 1024, false),
+      date
+    });
+    if (layer === "VIIRS_SNPP_DayNightBand_ENCC") {
+      for (let back = 0; back <= 3; back++) {
+        const d = back === 0 ? date : shiftIsoDate(date, -back);
+        candidates.push({
+          label: `NOAA20 night ${d}`,
+          url: buildGibsRawUrl("VIIRS_NOAA20_DayNightBand_ENCC", d, 2048, 1024),
+          date: d
+        });
+      }
+      candidates.push({
+        label: "Black Marble static",
+        url: buildGibsRawUrl("VIIRS_Black_Marble", null, 3072, 1536),
+        date: "static-black-marble"
+      });
+    }
+    let best = null;
+    let blankFallback = null;
+    for (const c of candidates) {
+      const got = await tryFetch(c.label, c.url);
+      if (!got) continue;
+      if (got.buf.length > MAX_BYTES) {
+        log.push({ label: c.label, note: "too large, skipped" });
+        continue;
+      }
+      if (got.buf.length >= MIN_USEFUL_BYTES) {
+        best = { ...got, date: c.date };
         break;
       }
+      if (!blankFallback) blankFallback = { ...got, date: c.date };
+    }
+    best = best ?? blankFallback;
+    if (debug) {
+      res.json({ layer, date, chosen: best ? { date: best.date, bytes: best.buf.length } : null, attempts: log });
+      return;
     }
     if (!best) {
       res.status(502).json({ error: "NASA GIBS did not return imagery for this layer/date. Try an earlier date." });

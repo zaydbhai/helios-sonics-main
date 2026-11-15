@@ -3,6 +3,7 @@ import { nasaProvider, type CustomDatasetIngestInput } from '../nasa/adapter.ts'
 import {
   autoSetupAndFetchNasaProjection,
   buildGibsWmsUrl,
+  buildGibsRawUrl,
   shiftIsoDate,
   connectCustomNasaApi,
   fetchDonkiSpaceWeatherDataset,
@@ -218,54 +219,102 @@ nasaRouter.get('/nasa/gibs/image', async (req, res) => {
         : getDefaultGibsDate(2);
     const width = typeof req.query.width === 'string' ? Number(req.query.width) : 3072;
     const height = typeof req.query.height === 'string' ? Number(req.query.height) : 1536;
+    const debug = req.query.debug === '1';
 
     // Vercel caps response bodies at ~4.5 MB, so stay safely below that.
     const MAX_BYTES = 4_000_000;
     // A nearly-empty (all black) JPEG is tiny; treat that as "no data for this date".
     const MIN_USEFUL_BYTES = 25_000;
     const deadline = Date.now() + 24_000;
+    const log: Array<Record<string, unknown>> = [];
 
-    const tryFetch = async (url: string) => {
+    const tryFetch = async (label: string, url: string) => {
       const remaining = deadline - Date.now();
-      if (remaining < 1500) return null;
+      if (remaining < 1500) {
+        log.push({ label, skipped: 'time budget exhausted' });
+        return null;
+      }
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), Math.min(12_000, remaining));
       try {
         const upstream = await fetch(url, { signal: controller.signal });
-        if (!upstream.ok) return null;
         const type = upstream.headers.get('content-type') || '';
-        if (!type.startsWith('image/')) return null;
-        return { type, buf: Buffer.from(await upstream.arrayBuffer()) };
-      } catch {
+        if (!upstream.ok || !type.startsWith('image/')) {
+          const text = type.startsWith('image/') ? '' : (await upstream.text()).slice(0, 200);
+          log.push({ label, http: upstream.status, type, note: text });
+          return null;
+        }
+        const buf = Buffer.from(await upstream.arrayBuffer());
+        log.push({ label, http: upstream.status, type, bytes: buf.length });
+        return { type, buf };
+      } catch (err) {
+        log.push({ label, error: err instanceof Error ? err.message : String(err) });
         return null;
       } finally {
         clearTimeout(timeoutId);
       }
     };
 
-    // Try the requested date first, then up to 3 earlier days if imagery is missing/blank.
-    // Within a date: high-res with underlays -> mid-res with underlays -> plain layer.
-    const attempts: Array<[number, number, boolean]> = [
-      [width, height, true],
-      [2048, 1024, true],
-      [2048, 1024, false],
-    ];
-    let best: { type: string; buf: Buffer; date: string } | null = null;
-    outer: for (let back = 0; back <= 3; back++) {
+    type Candidate = { label: string; url: string; date: string };
+    const candidates: Candidate[] = [];
+    // 1) requested layer, requested date then up to 5 earlier days
+    for (let back = 0; back <= 5; back++) {
       const d = back === 0 ? date : shiftIsoDate(date, -back);
-      for (const [w, h, under] of attempts) {
-        const got = await tryFetch(buildGibsWmsUrl(layer, d, w, h, under));
-        if (!got) continue;
-        if (got.buf.length > MAX_BYTES) continue; // too big for the platform; try smaller
-        if (got.buf.length >= MIN_USEFUL_BYTES) {
-          best = { ...got, date: d };
-          break outer;
-        }
-        if (!best) best = { ...got, date: d }; // keep as last-resort fallback
-        break; // blank result: move to the previous day instead of trying other sizes
+      candidates.push({
+        label: `${layer} ${d} ${width}px+base`,
+        url: buildGibsWmsUrl(layer, d, width, height, true),
+        date: d,
+      });
+    }
+    // 2) lower-res / plain-layer retry for the requested date (covers size or underlay issues)
+    candidates.push({
+      label: `${layer} ${date} 2048px+base`,
+      url: buildGibsWmsUrl(layer, date, 2048, 1024, true),
+      date,
+    });
+    candidates.push({
+      label: `${layer} ${date} 2048px plain`,
+      url: buildGibsWmsUrl(layer, date, 2048, 1024, false),
+      date,
+    });
+    // 3) Night lights: try the NOAA-20 sensor, then the static Black Marble composite
+    if (layer === 'VIIRS_SNPP_DayNightBand_ENCC') {
+      for (let back = 0; back <= 3; back++) {
+        const d = back === 0 ? date : shiftIsoDate(date, -back);
+        candidates.push({
+          label: `NOAA20 night ${d}`,
+          url: buildGibsRawUrl('VIIRS_NOAA20_DayNightBand_ENCC', d, 2048, 1024),
+          date: d,
+        });
       }
+      candidates.push({
+        label: 'Black Marble static',
+        url: buildGibsRawUrl('VIIRS_Black_Marble', null, 3072, 1536),
+        date: 'static-black-marble',
+      });
     }
 
+    let best: { type: string; buf: Buffer; date: string } | null = null;
+    let blankFallback: { type: string; buf: Buffer; date: string } | null = null;
+    for (const c of candidates) {
+      const got = await tryFetch(c.label, c.url);
+      if (!got) continue;
+      if (got.buf.length > MAX_BYTES) {
+        log.push({ label: c.label, note: 'too large, skipped' });
+        continue;
+      }
+      if (got.buf.length >= MIN_USEFUL_BYTES) {
+        best = { ...got, date: c.date };
+        break;
+      }
+      if (!blankFallback) blankFallback = { ...got, date: c.date };
+    }
+    best = best ?? blankFallback;
+
+    if (debug) {
+      res.json({ layer, date, chosen: best ? { date: best.date, bytes: best.buf.length } : null, attempts: log });
+      return;
+    }
     if (!best) {
       res.status(502).json({ error: 'NASA GIBS did not return imagery for this layer/date. Try an earlier date.' });
       return;

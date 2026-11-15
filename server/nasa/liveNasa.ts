@@ -98,6 +98,28 @@ export function buildGibsWmsUrl(
   return `https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?${params.toString()}`;
 }
 
+/** Low-level WMS URL builder for internal fallback layers (no allow-list check). */
+export function buildGibsRawUrl(
+  layersCsv: string,
+  dateStr: string | null,
+  width: number,
+  height: number
+): string {
+  const params = new URLSearchParams({
+    SERVICE: 'WMS',
+    REQUEST: 'GetMap',
+    VERSION: '1.3.0',
+    LAYERS: layersCsv,
+    CRS: 'EPSG:4326',
+    BBOX: '-90,-180,90,180',
+    WIDTH: String(Math.min(4096, Math.max(256, Math.round(width)))),
+    HEIGHT: String(Math.min(2048, Math.max(128, Math.round(height)))),
+    FORMAT: 'image/jpeg',
+  });
+  if (dateStr) params.set('TIME', dateStr);
+  return `https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?${params.toString()}`;
+}
+
 export function shiftIsoDate(dateStr: string, deltaDays: number): string {
   return new Date(Date.parse(`${dateStr}T00:00:00Z`) + deltaDays * 86_400_000)
     .toISOString()
