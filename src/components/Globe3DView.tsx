@@ -221,7 +221,7 @@ export function Globe3DView({
     texCanvas.height = texW / 2;
     const texCtx = texCanvas.getContext('2d');
     if (texCtx) {
-      paintProceduralPlanetTexture(texCtx, texCanvas.width, texCanvas.height, accentColor);
+      texCtx.fillStyle = "#07090E"; texCtx.fillRect(0, 0, texCanvas.width, texCanvas.height);
     }
     const earthTexture = new THREE.CanvasTexture(texCanvas);
     earthTexture.colorSpace = THREE.SRGBColorSpace;
@@ -414,9 +414,7 @@ export function Globe3DView({
       img.src = url;
     };
     textureUpdaterRef.current = drawImageToEarthTexture;
-    if (mapImageUrl) {
-      drawImageToEarthTexture(mapImageUrl);
-    }
+    drawImageToEarthTexture(mapImageUrl || "/api/nasa/gibs/image?layer=MODIS_Terra_CorrectedReflectance_TrueColor");
 
     // ResizeObserver for crisp responsive viewport updates
     const resizeObserver = new ResizeObserver((entries) => {

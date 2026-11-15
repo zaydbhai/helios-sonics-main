@@ -9,6 +9,8 @@ import {
   connectCustomNasaApi,
   fetchDonkiSpaceWeatherDataset,
   fetchLiveIssTelemetry,
+  fetchNasaImageBinary,
+  fetchNasaExoplanetParameters,
   getDefaultGibsDate,
   getNasaApiPresets,
   getNasaKeyStatus,
@@ -403,3 +405,31 @@ nasaRouter.get('/nasa/integration-blueprint', (_req, res) => {
   });
 });
 
+
+
+nasaRouter.get("/nasa/image-proxy", async (req, res) => {
+  try {
+    const nasaId = typeof req.query.nasa_id === "string" ? req.query.nasa_id : undefined;
+    const query = typeof req.query.q === "string" ? req.query.q : undefined;
+    const asset = await fetchNasaImageBinary({ nasaId, query });
+    res.setHeader("Content-Type", asset.contentType);
+    res.setHeader("Cache-Control", "public, max-age=86400");
+    res.send(asset.buffer);
+  } catch (error) {
+    res.status(502).json({ error: error instanceof Error ? error.message : "Failed to fetch NASA image" });
+  }
+});
+
+nasaRouter.get("/nasa/exoplanet", async (req, res) => {
+  try {
+    const planet = typeof req.query.name === "string" ? req.query.name : "WASP-39 b";
+    const data = await fetchNasaExoplanetParameters(planet);
+    if (!data) {
+      res.status(404).json({ error: `Exoplanet "${planet}" not found.` });
+      return;
+    }
+    res.json(data);
+  } catch (error) {
+    res.status(502).json({ error: error instanceof Error ? error.message : "Exoplanet TAP query failed" });
+  }
+});

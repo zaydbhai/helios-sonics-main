@@ -508,13 +508,32 @@ export const MissionsTab = React.forwardRef<MissionsTabHandle, MissionsTabProps>
       if (!ctx) return;
 
       if (customImageLabel && chandraSourceImageRef.current) {
-        ctx.fillStyle = '#03060C';
+        ctx.fillStyle = "#03060C";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(chandraSourceImageRef.current, 0, 0, canvas.width, canvas.height);
-      } else {
-        paintChandraDeepSpaceScene(ctx, canvas.width, canvas.height, chandraSceneId);
+        sampleChandraColumn(chandraXNorm, false);
+        return;
       }
-      sampleChandraColumn(chandraXNorm, false);
+      let cancelled = false;
+      const proxyUrl =
+        chandraSceneId === "cas-a"
+          ? "/api/nasa/image-proxy?nasa_id=GSFC_20171208_Archive_e002183"
+          : chandraSceneId === "pillars"
+          ? "/api/nasa/image-proxy?q=Pillars+of+Creation+Webb"
+          : "/api/nasa/image-proxy?q=Sagittarius+A+Chandra";
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.onload = () => {
+        if (cancelled) return;
+        ctx.fillStyle = "#03060C";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        sampleChandraColumn(chandraXNorm, false);
+      };
+      img.src = proxyUrl;
+      return () => {
+        cancelled = true;
+      };
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activePreset, chandraSceneId, customImageLabel]);
 

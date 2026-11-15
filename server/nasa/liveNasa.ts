@@ -313,23 +313,7 @@ export async function fetchDonkiSpaceWeatherDataset(
       source = 'nasa-donki-live';
       loadedFromDonki = true;
     } catch (err) {
-      source = 'fallback-solar-cycle';
-      notice = `Using calibrated space-weather baseline (${
-        err instanceof Error ? err.message : 'network unavailable'
-      }).`;
-
-      for (let i = 0; i < steps; i++) {
-        if (feedType === 'FLR') {
-          const spike = i === 14 ? 2.1 : i === 29 ? 2.8 : i === 30 ? 1.9 : 0;
-          primarySeries[i] = Number((-6.7 + Math.sin(i * 0.35) * 0.25 + spike).toFixed(3));
-          secondarySeries[i] = spike > 0 ? Math.round(spike) : 0;
-        } else {
-          const storm = i >= 18 && i <= 24 ? 5.6 - Math.abs(i - 21) * 0.65 : 0;
-          primarySeries[i] = Number((1.4 + Math.sin(i * 0.4) * 0.5 + storm).toFixed(2));
-          secondarySeries[i] = primarySeries[i] >= 4.5 ? Number((primarySeries[i] - 4).toFixed(2)) : 0.2;
-        }
-      }
-      eventCount = feedType === 'FLR' ? 3 : 2;
+      throw new Error(`Live DONKI & SWPC feeds unavailable: ${err instanceof Error ? err.message : "network error"}`);
     }
   }
 
@@ -974,58 +958,47 @@ export async function fetchLiveIssTelemetry(): Promise<IssTelemetryResponse> {
       timestamp: new Date((raw.timestamp || nowSec) * 1000).toISOString(),
       track,
     };
-  } catch {
-    // Calibrated Keplerian orbital fallback (92.9-min period, 51.64 deg inclination)
-    const periodSec = 5574;
-    const phase = (nowSec / periodSec) * Math.PI * 2;
-    const latitude = Number((51.64 * Math.sin(phase)).toFixed(4));
-    const longitude = Number(
-      (((((nowSec / 86400) * 360 * 15.5) + 180) % 360) - 180).toFixed(4)
-    );
-    const solarLon = Number((((-(nowSec % 86400) / 86400) * 360 + 180)).toFixed(2));
-    const solarLat = -18.2;
-    const solarElevationDeg = Number(
-      computeSolarElevationDeg(latitude, longitude, solarLat, solarLon).toFixed(2)
-    );
-    const visibility = solarElevationDeg > -19 ? 'daylight' : 'eclipsed';
-    const daylightFactor = Math.max(
-      0,
-      Math.min(1, (solarElevationDeg + 20) / 55)
-    );
-
-    const track: IssTrackPoint[] = [];
-    for (let i = -5; i <= 9; i++) {
-      const ts = nowSec + i * 300;
-      const p = (ts / periodSec) * Math.PI * 2;
-      const lat = Number((51.64 * Math.sin(p)).toFixed(4));
-      const lon = Number((((((ts / 86400) * 360 * 15.5) + 180) % 360) - 180).toFixed(4));
-      const elev = computeSolarElevationDeg(lat, lon, solarLat, solarLon);
-      track.push({
-        latitude: lat,
-        longitude: lon,
-        timestamp: ts,
-        visibility: elev > -19 ? 'daylight' : 'eclipsed',
-      });
-    }
-
-    return {
-      source: 'kepler-fallback',
-      name: 'iss',
-      id: 25544,
-      latitude,
-      longitude,
-      altitudeKm: 418.4,
-      velocityKmh: 27584.2,
-      visibility,
-      footprintKm: 4512.0,
-      solarLat,
-      solarLon,
-      solarElevationDeg,
-      daylightFactor: Number(daylightFactor.toFixed(3)),
-      timestamp: new Date(nowSec * 1000).toISOString(),
-      track,
-    };
+  } catch (err) {
+    throw new Error(`Live ISS telemetry unavailable: ${err instanceof Error ? err.message : "network error"}`);
   }
 }
 
 
+
+
+export async function fetchNasaImageBinary(params: {
+  nasaId?: string;
+  query?: string;
+}): Promise<{ contentType: string; buffer: Buffer; title: string; nasaId: string }> {
+  const searchUrl = params.nasaId
+    ? `https://images-api.nasa.gov/search?nasa_id=${encodeURIComponent(params.nasaId)}&media_type=image`
+    : `https://images-api.nasa.gov/search?q=${encodeURIComponent(params.query || "Cassiopeia A Chandra")}&media_type=image`;
+
+  const searchRes = await fetch(searchUrl);
+  if (!searchRes.ok) throw new Error(`NASA Images API returned HTTP ${searchRes.status}`);
+  const json = (await searchRes.json()) as {
+    collection?: { items?: Array<{ data?: Array<{ nasa_id?: string; title?: string }>; links?: Array<{ href?: string }> }> };
+  };
+  const item = json.collection?.items?.[0];
+  const imgHref = item?.links?.find((l) => l.href)?.href;
+  if (!imgHref) throw new Error("No NASA image asset found for query.");
+
+  const imgRes = await fetch(imgHref);
+  if (!imgRes.ok) throw new Error(`NASA Image asset returned HTTP ${imgRes.status}`);
+  return {
+    contentType: imgRes.headers.get("content-type") || "image/jpeg",
+    buffer: Buffer.from(await imgRes.arrayBuffer()),
+    title: item?.data?.[0]?.title || "NASA Observatory Image",
+    nasaId: item?.data?.[0]?.nasa_id || params.nasaId || "",
+  };
+}
+
+export async function fetchNasaExoplanetParameters(planetName: string) {
+  const safeName = planetName.replace(/[^a-zA-Z0-9\s\-+]/g, "").trim();
+  const sql = `select pl_name,pl_rade,pl_bmasse,pl_eqt,pl_orbper,sy_dist,discoverymethod from pscomppars where pl_name='${safeName}'`;
+  const url = `https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=${encodeURIComponent(sql)}&format=json`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`NASA Exoplanet Archive TAP returned HTTP ${res.status}`);
+  const rows = (await res.json()) as Array<Record<string, unknown>>;
+  return rows[0] ?? null;
+}
